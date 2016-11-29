@@ -41,6 +41,9 @@ robbot = Cinch::Bot.new do
             end
 	    val
         end
+	def daily_reset()
+	    @daily = false
+	end
 	def buy(item, recipient, m)
 	    if item == "kick"
                 if @coins > 999
@@ -84,7 +87,7 @@ robbot = Cinch::Bot.new do
         for i in members do
             i.trivia = 0
             i.uno = 0
-            i.daily = false
+            i.daily_reset
         end
     }
 
