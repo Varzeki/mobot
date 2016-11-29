@@ -1,0 +1,7 @@
+config:
+    server: irc.rizon.net
+    port: 6667
+    nick: robbot
+    channels: ['#homescreen', '#taytay', '#bro']
+    realname: zozzle
+    password: clocks
