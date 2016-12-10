@@ -44,6 +44,9 @@ mobot = Cinch::Bot.new do
             end
 	    val
         end
+        def get_stats()
+            [@dex, @str, @int, @lck]
+        end
         def robbed(message)
 	    if rand() > 0.8
 	        amount = rand() * @coins/2
@@ -145,6 +148,11 @@ mobot = Cinch::Bot.new do
 
     on :message, ".coins" do |m|
         m.reply mobot.get_user(m.user.to_s, $members).coins
+    end
+
+    on :message, ".stats" do |m|
+        stats = mobot.get_user(m.user.to_s, $members).get_stats
+        m.reply "DEX: #{stats[0]} | STR: #{stats[1]} | INT: #{stats[2]} | LCK: #{stats[3]}"
     end
 
     on :message, ".taytay" do |m|
