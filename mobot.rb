@@ -261,7 +261,7 @@ mobot = Cinch::Bot.new do
         lst = arg.split(' ')
 	robber = mobot.get_user(m.user.to_s, $members)
 	victim = mobot.get_user(lst[0], $members)
-	if robber.coins > 19
+	if robber.coins > 19 or robber == "uncleleech"
 	    if robber == victim
 		m.reply "You're seriously trying to rob yourself? What a masochist!"
 	    end
