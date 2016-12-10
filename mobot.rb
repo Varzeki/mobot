@@ -18,8 +18,8 @@ mobot = Cinch::Bot.new do
     end
 
     class Member
-        attr_accessor :name, :coins
-        def initialize(name, coins = 0, dex = 0, str = 0, int = 0, lck = 0)
+        attr_accessor :name, :coins, :dex, :str, :int, :lck, :pvp
+        def initialize(name, coins = 0, dex = 1, str = 1, int = 1, lck = 1)
             @name = name
             @coins = coins
             @daily = false
@@ -27,6 +27,7 @@ mobot = Cinch::Bot.new do
 	    @str = str
 	    @int = int
 	    @lck = lck
+	    @pvp = false
         end
         def add_trivia(amount)
             @coins = @coins + amount * 2
@@ -45,19 +46,29 @@ mobot = Cinch::Bot.new do
 	    val
         end
         def get_stats()
-            [@dex, @str, @int, @lck]
+            val = [@dex, @str, @int, @lck]
+	    val
         end
         def robbed(message)
 	    if rand() > 0.8
-	        amount = rand() * @coins/2
+		amount = rand() * @coins/2
 		amount = amount.round
 		@coins = @coins - amount
 		message.reply "You successfully stole #{amount} coins!"
 		amount
 	    else
 		message.reply "You failed to steal anything!"
-	        0
+		0
 	    end
+	end
+	def pvp()
+	    @pvp = !@pvp
+	    if @pvp
+		val = "Your PvP is now ON!"
+	    else
+		val = "Your PvP is now OFF!"
+	    end
+	    val
 	end
 	def daily_reset()
 	    @daily = false
@@ -81,6 +92,46 @@ mobot = Cinch::Bot.new do
 		    val = "You need 2000 coins to devoice someone!"
 		end
 	    end
+	    if item == "DEX"
+		amount = 450 + 50 * @dex
+		if @coins > amount - 1
+		    @coins = @coins - amount
+		    @dex = @dex + 1
+		    val = "DEX upgraded! Your DEX is now #{@dex}!"
+		else
+		    val = "You need #{amount} coins to upgrade your DEX!"
+		end
+            end
+	    if item == "INT"
+		amount = 450 + 50 * @int
+		if @coins > amount - 1
+		    @coins = @coins - amount
+		    @int = @int + 1
+		    val = "INT upgraded! Your INT is now #{@int}!"
+		else
+		    val = "You need #{amount} coins to upgrade your INT!"
+		end
+            end
+	    if item == "STR"
+		amount = 450 + 50 * @str
+		if @coins > amount - 1
+		    @coins = @coins - amount
+		    @str = @str + 1
+		    val = "STR upgraded! Your STR is now #{@str}!"
+		else
+		    val = "You need #{amount} coins to upgrade your STR!"
+		end
+            end
+	    if item == "LCK"
+		amount = 450 + 50 * @lck
+		if @coins > amount - 1
+		    @coins = @coins - amount
+		    @lck = @lck + 1
+		    val = "LCK upgraded! Your LCK is now #{@lck}!"
+		else
+		    val = "You need #{amount} coins to upgrade your LCK!"
+		end
+            end
 	    val
 	end
     end
@@ -88,7 +139,7 @@ mobot = Cinch::Bot.new do
     def get_user(user, mem)
         for i in mem
 	    if i.name == user
-	        return i
+		return i
 	    end
 	end
 	new = Member.new(user)
@@ -140,7 +191,7 @@ mobot = Cinch::Bot.new do
 	usr = mobot.get_user(m.user.to_s, $members)
 	m.reply usr.daily
 	    threads.push Thread.new {
-	        sleep(86400)
+		sleep(86400)
 		usr.daily_reset
 	    }
 	    mobot.update_db($members)
@@ -150,13 +201,17 @@ mobot = Cinch::Bot.new do
         m.reply mobot.get_user(m.user.to_s, $members).coins
     end
 
-    on :message, ".stats" do |m|
+    on :message, ".attr" do |m|
         stats = mobot.get_user(m.user.to_s, $members).get_stats
-        m.reply "DEX: #{stats[0]} | STR: #{stats[1]} | INT: #{stats[2]} | LCK: #{stats[3]}"
+        m.reply "DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s}"
     end
 
     on :message, ".taytay" do |m|
 	m.reply(".money")
+    end
+
+    on :message, ".pvp" do |m|
+	m.reply mobot.get_user(m.user.to_s, $members).pvp
     end
 
     on :message, ".help" do |m|
@@ -173,8 +228,8 @@ mobot = Cinch::Bot.new do
 	if m.user.to_s == "Trivia"
 	    lst = m.message.split(' ')
             if lst[0] == "Winner:"
-	        mobot.get_user(lst[1].chop, $members).add_trivia(lst[lst.index("Points:")+1].chop.to_i)
-	        mobot.update_db($members)
+		mobot.get_user(lst[1].chop, $members).add_trivia(lst[lst.index("Points:")+1].chop.to_i)
+		mobot.update_db($members)
 	    end
 	end
     end
@@ -183,7 +238,7 @@ mobot = Cinch::Bot.new do
 	if m.user.to_s == "UNOBot"
 	    lst = m.message.split(' ')
             if lst[1] == "gains"
-	        mobot.get_user(m.user.to_s, $members).add_uno(lst[2].to_i)
+		mobot.get_user(m.user.to_s, $members).add_uno(lst[2].to_i)
 	    end
 	end
     end
@@ -208,7 +263,7 @@ mobot = Cinch::Bot.new do
 	victim = mobot.get_user(lst[0], $members)
 	if robber.coins > 19
 	    if robber == victim
-	        m.reply "You're seriously trying to rob yourself? What a masochist!"
+		m.reply "You're seriously trying to rob yourself? What a masochist!"
 	    end
 	    robber.coins = robber.coins + victim.robbed(m) - 20
 	    mobot.update_db($members)
