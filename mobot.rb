@@ -224,13 +224,13 @@ mobot = Cinch::Bot.new do
 	    mobot.update_db($members)
     end
 
-    on :message, ".coins" do |m, args|
-        lst = args.split(' ')
-        if lst[0] == ''
-            m.reply mobot.get_user(m.user.to_s, $members).coins
+    on :message,  /^.coins/ do |m|
+	lst = m.message.split(' ')
+	if lst.length > 1
+	    m.reply mobot.get_user(lst[1], $members).coins
         else
-            m.reply mobot.get_user(lst[0], $members).coins
-        end
+            m.reply mobot.get_user(m.user.to_s, $members).coins
+    	end
     end
 
     on :message, ".attr" do |m|
@@ -294,13 +294,13 @@ mobot = Cinch::Bot.new do
 	
     on :message, /^.rob (.+)/ do |m, arg|
         lst = arg.split(' ')
-	    robber = mobot.get_user(m.user.to_s, $members)
+	robber = mobot.get_user(m.user.to_s, $members)
 	    victim = mobot.get_user(lst[0], $members)
 	    if robber.coins > 19 or robber == "uncleleech"
 	        if robber == victim
 		        m.reply "You're seriously trying to rob yourself? What a masochist!"
 	        end
-            amount = victim.robbed(m)
+            amount = victim.robbed
 	        robber.coins = robber.coins + amount - 20
             current = robber.coins
             if amount > 0
