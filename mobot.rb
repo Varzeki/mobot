@@ -248,15 +248,24 @@ mobot = Cinch::Bot.new do
 
     on :message, ".help" do |m|
         User(m.user.to_s).send("Hi! I'm mobot! I allow you to save up coins via playing games with other bots in irc such as UNOBot or Trivia, and eventually spend them to devoice or kick other $members, even if you don't have permission to do so. Try doing '.daily' to get started.")
-	    User(m.user.to_s).send('Commands are as follows:')
-	    User(m.user.to_s).send('.daily - Claims your daily 250 coins')
-	    User(m.user.to_s).send('.coins - Shows your current balance')
-	    User(m.user.to_s).send('.purchase {item} {recipient} - Purchases an item')
-	    User(m.user.to_s).send('.store - Purchases an item')
-	    User(m.user.to_s).send('.taytay - Shows current taylorswift balance')
-	    User(m.user.to_s).send('.rob - Pay 20 coins to attempt to rob another user')
+	User(m.user.to_s).send('Commands are as follows:')
+	User(m.user.to_s).send('.daily - Claims your daily 250 coins')
+	User(m.user.to_s).send('.coins - Shows your current balance')
+	User(m.user.to_s).send('.purchase {item} {recipient} - Purchases an item')
+	User(m.user.to_s).send('.store - Lists items for purchase')
+	User(m.user.to_s).send('.taytay - Shows current taylorswift balance')
+	User(m.user.to_s).send('.rob - Pay 20 coins to attempt to rob another user')
         User(m.user.to_s).send('.attr - Shows your current attributes')
         User(m.user.to_s).send('.pvp - Toggles your PvP status')
+    end
+
+    on :message, ".store" do |m|
+        User(m.user.to_s).send('kick {recipient} - Kicks target user - 1000 coins')
+        User(m.user.to_s).send('devoice {recipient} - Devoices target user - 2000 coins')
+        User(m.user.to_s).send('DEX - Increases your Dexterity attribute - 500 + 50 for each previous upgrade')
+        User(m.user.to_s).send('INT - Increases your Intelligence attribute - 500 + 50 for each previous upgrade')
+        User(m.user.to_s).send('STR - Increases your Strength attribute - 500 + 50 for each previous upgrade')
+        User(m.user.to_s).send('LCK - Increases your Luck attribute - 500 + 50 for each previous upgrade')
     end
 
     on :message do |m|
@@ -276,7 +285,7 @@ mobot = Cinch::Bot.new do
 	    	    mobot.get_user(m.user.to_s, $members).add_uno(lst[2].to_i)
 	        end
 	    end
-    end
+       end
 
     on :message, /^.credit (.+)/ do |m, arg|
         lst = arg.split(' ')
@@ -327,7 +336,7 @@ end
 #Set logging
 mobot.loggers << Cinch::Logger::FormattedLogger.new(File.open("./mobot.log", "a"))
 mobot.loggers.level = :debug
-#mobot.loggers.first.level = :info
+mobot.loggers.first.level = :info
 
 #Start
 mobot.start
