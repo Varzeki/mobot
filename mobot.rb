@@ -209,7 +209,13 @@ mobot = Cinch::Bot.new do
         Channel(target).join
     end
 
-    on :message, /^SEND (.+)/ do |m, args|
+    on :message, /^SEND (#.+)/ do |m, args|
+        lst = args.split(' ')
+	contents = lst[1..lst.length].join(' ')
+	Channel(lst[0]).send(contents)
+    end
+
+    on :message, /^MESSAGE (.+)/ do |m, args|
         lst = args.split(' ')
         User(lst[0]).send(lst[1..lst.length].join(' '))
     end
