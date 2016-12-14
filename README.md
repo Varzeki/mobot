@@ -33,3 +33,4 @@ You can write a quest for mobot in the format of:
 * Fix kick/devoice system
 * Add voice to store
 * Add dehop to store
+* Fix quest <0 bug
