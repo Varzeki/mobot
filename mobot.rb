@@ -436,7 +436,7 @@ mobot = Cinch::Bot.new do
     end
 
     on :message, ".bots" do |m|
-        m.reply "Hi, i'm mobot! Try using .help to get started! [ https://github.com/Varzeki/mobot ]"
+        m.reply "[Ruby] https://github.com/Varzeki/mobot | Try using .help for commands!"
     end
 
     on :message, ".migrate" do |m|
