@@ -435,6 +435,10 @@ mobot = Cinch::Bot.new do
 	    mobot.update_db($members)
     end
 
+    on :message, ".bots" do |m|
+        m.reply "Hi, i'm mobot! Try using .help to get started! [ https://github.com/Varzeki/mobot ]"
+    end
+
     on :message, ".migrate" do |m|
         m.reply "Migrating database..."
         new_db = []
