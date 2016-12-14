@@ -450,14 +450,16 @@ mobot = Cinch::Bot.new do
         lst = arg.split(' ')
         user = mobot.get_user(m.user.to_s, $members)
         if lst[0].to_i > 1
-            if rand() > 0.6
-                user.coins = user.coins + lst[0].to_i
-                amount = user.coins
-                m.reply "Congratulations, you won! You now have #{amount} coins!"
-            else
-                user.coins = user.coins - lst[0].to_i
-                amount = user.coins
-                m.reply "You lost! You now have #{amount} coins!"
+            if user.coins - lst[0].to_i > -1
+                if rand() > 0.6
+                    user.coins = user.coins + lst[0].to_i
+                    amount = user.coins
+                    m.reply "Congratulations, you won! You now have #{amount} coins!"
+                else
+                    user.coins = user.coins - lst[0].to_i
+                    amount = user.coins
+                    m.reply "You lost! You now have #{amount} coins!"
+                end
             end
         end
     end
