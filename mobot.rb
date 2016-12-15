@@ -329,28 +329,62 @@ mobot = Cinch::Bot.new do
         mission = $missions.sample
         user = mobot.get_user(m.user.to_s, $members)
         if user.mission == false
-            result = mission.attempt(user.get_stats)
-            reward = result[2]
-            m.reply result[0]
-            m.reply result[1]
-            if (user.credits + reward) < 1
-                neg = user.credits
-                user.credits = 0
-                m.reply "That mission lost you #{neg} credits! You now have 0 credits!"
-            else
-                user.credits = user.credits + reward
-                current = user.credits
+            if not user.crew == "%NONE"
+                statblock = []
+                mobot.get_user(user.crew, $members).crew_array.each do |i|
+                    statblock.push(i.get_stats) 
+                end
+                stats = [1, 1, 1, 1]
+                statblock.each do |i|
+                    4.times do |j|
+                        if i[j] > stats[j]
+                            stats[j] = i[j]
+                        end
+                    end
+                end
+                result = mission.attempt(stats)
+                reward = (result[2] / statblock.length).round
+                reward = reward + 10
+                m.reply result[0]
+                m.reply result[1]
+                user.mission = true
+                mobot.get_user(user.crew, $members).crew_array.each do |i|
+                    if (i.credits + reward) < 1
+                        user.credits = 0
+                    else
+                        i.credits = i.credits + reward
+                    end
+                end
                 if reward < 0
                     reward = reward.abs
-                    m.reply "That mission lost you #{reward} credits! You now have #{current} credits!"
+                    m.reply "That mission lost your crew #{reward} credits each!"
                 else
-                    m.reply "That mission gained you #{reward} credits! You now have #{current} credits!"
+                    m.reply "That mission gained your crew #{reward} credits each!"
                 end
+            else
+                result = mission.attempt(user.get_stats)
+                reward = result[2]
+                m.reply result[0]
+                m.reply result[1]
+                if (user.credits + reward) < 1
+                    neg = user.credits
+                    user.credits = 0
+                    m.reply "That mission lost you #{neg} credits! You now have 0 credits!"
+                else
+                    user.credits = user.credits + reward
+                    current = user.credits
+                    if reward < 0
+                        reward = reward.abs
+                        m.reply "That mission lost you #{reward} credits! You now have #{current} credits!"
+                    else
+                        m.reply "That mission gained you #{reward} credits! You now have #{current} credits!"
+                    end
+                end
+                user.mission = true
+                mobot.update_db($members)
+                sleep(180)
+                user.mission = false
             end
-            user.mission = true
-            mobot.update_db($members)
-            sleep(180)
-            user.mission = false
         else
             m.reply "You already went on a mission recently! Take a break for a minute or three."
         end
