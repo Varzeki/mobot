@@ -87,7 +87,7 @@ mobot = Cinch::Bot.new do
 
     #Class for each user
     class Member
-        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew
+        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew, :crew_array, :crew_open
         
 
         #On initialization, only takes name by default
@@ -487,7 +487,7 @@ mobot = Cinch::Bot.new do
         m.reply "Migrating database..."
         new_db = []
         $members.each do |i|
-            new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck))
+            new_db.push(Member.new(i.name, i.credits, ni.dex, i.str, i.int, i.lck))
         end
         $members = new_db
         mobot.update_db($members)
