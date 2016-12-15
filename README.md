@@ -21,7 +21,13 @@ These features currently include:
 * .quest - Attempts a quest
 * .pvp - Toggles the users PvP status
 * .bet {amount} - Bets an amount of coins, with a 40% chance to double your offer
-
+* .crew {option} [user] - Operates crews, with commands as:
+  * start - Starts a crew
+  * join {username} - Joins another persons crew
+  * open - Opens a crew to new members
+  * close - Closes a crew to new members
+  * leave - Leaves the current crew, or disbands it if you are captain
+  * show - Shows the status of your current crew
 #Contribute
 Feature requests and bug reports welcome, along with pull requests - feel free to participate!
 

@@ -405,6 +405,12 @@ mobot = Cinch::Bot.new do
         User(m.user.to_s).send('.mission - Attempt a mission')
         User(m.user.to_s).send('.pvp - Toggles your PvP status')
         User(m.user.to_s).send('.bet {amount} - Attempt to bet some credits - double or nothing!')
+        User(m.user.to_s).send('.crew start - Starts a crew with you as captain')
+        User(m.user.to_s).send('.crew join {username} - Joins another users crew, provided it is open')
+        User(m.user.to_s).send('.crew open - Opens your crew to new members')
+        User(m.user.to_s).send('.crew close - Closes your crew to new members')
+        User(m.user.to_s).send('.crew leave - Leaves the current crew, or disbands it if you are captain')
+        User(m.user.to_s).send('.crew show - Shows the status of your current crew')
     end
 
     on :message, ".store" do |m|
@@ -456,6 +462,7 @@ mobot = Cinch::Bot.new do
             if user.crew == "%NONE"
                 user.crew = user.name
                 user.crew_array = [user.name]
+                user.crew_open = false
                 mobot.update_db($members)
                 m.reply "You started a crew!"
             else
