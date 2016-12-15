@@ -349,10 +349,11 @@ mobot = Cinch::Bot.new do
                 m.reply result[1]
                 user.mission = true
                 mobot.get_user(user.crew, $members).crew_array.each do |i|
-                    if (mobot.get_user(i, $members).credits + reward) < 1
+                    u = mobot.get_user(i, $members)
+                    if u.credits + reward) < 1
                         user.credits = 0
                     else
-                        i.credits = i.credits + reward
+                        u.credits = u.credits + reward
                     end
                 end
                 if reward < 0
