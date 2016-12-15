@@ -446,7 +446,7 @@ mobot = Cinch::Bot.new do
             end
         end
         if lst[0] == 'open'
-            if not user.crew == user.name
+            if user.crew == user.name
                 if not user.crew_open
                     user.crew_open = true
                     m.reply "Your crew is now open!"
@@ -462,7 +462,7 @@ mobot = Cinch::Bot.new do
             end
         end
         if lst[0] == 'close'
-            if not user.crew == user.name
+            if user.crew == user.name
                 if user.crew_open
                     user.crew_open = false
                     m.reply "Your crew is now close!"
