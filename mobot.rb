@@ -421,6 +421,7 @@ mobot = Cinch::Bot.new do
             if user.crew == "%NONE"
                 user.crew = user.name
                 user.crew_array = [user.name]
+                mobot.update_db($members)
                 m.reply "You started a crew!"
             else
                 m.reply "You're already in a crew!"
@@ -436,6 +437,7 @@ mobot = Cinch::Bot.new do
                         user2.crew_array.push(user.name)
                         user.crew = user2.name
                         cname = user2.name
+                        mobot.update_db($members)
                         m.reply "You just joined the crew of #{cname}!"
                     else
                         m.reply "That users crew is closed!"
@@ -450,6 +452,7 @@ mobot = Cinch::Bot.new do
                 if not user.crew_open
                     user.crew_open = true
                     m.reply "Your crew is now open!"
+                    mobot.update_db($members)
                 else
                     m.reply "Your crew is already open!"
                 end
@@ -465,6 +468,7 @@ mobot = Cinch::Bot.new do
             if user.crew == user.name
                 if user.crew_open
                     user.crew_open = false
+                    mobot.update_db($members)
                     m.reply "Your crew is now closed!"
                 else
                     m.reply "Your crew is already closed!"
@@ -484,11 +488,13 @@ mobot = Cinch::Bot.new do
                     j.crew = "%NONE"
                 end
                 user.crew_array = []
+                mobot.update_db($members)
                 m.reply "You disband the crew!"
             else
                 user2 = mobot.get_user(user.crew, $members)
                 user2.crew_array = user2.crew_array - [user.name]
                 user.crew = "%NONE"
+                mobot.update_db($members)
                 m.reply "You leave the crew!"
             end
         end
