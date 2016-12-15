@@ -354,21 +354,22 @@ mobot = Cinch::Bot.new do
 	    User(m.user.to_s).send('Commands are as follows:')
 	    User(m.user.to_s).send('.daily - Claims your daily 250 coins')
 	    User(m.user.to_s).send('.coins - Shows your current balance')
-	    User(m.user.to_s).send('.purchase {item} {recipient} - Purchases an item')
+	    User(m.user.to_s).send('.purchase {item} [recipient] - Purchases an item')
 	    User(m.user.to_s).send('.store - Lists items for purchase')
 	    User(m.user.to_s).send('.taytay - Shows current taylorswift balance')
 	    User(m.user.to_s).send('.rob - Pay 20 coins to attempt to rob another user')
         User(m.user.to_s).send('.attr - Shows your current attributes')
         User(m.user.to_s).send('.quest - Attempt a quest')
         User(m.user.to_s).send('.pvp - Toggles your PvP status')
+        User(m.user.to_s).send('.bet {amount} - Attempt to bet some coins - double or nothing!')
     end
 
     on :message, ".store" do |m|
         User(m.user.to_s).send('kick {recipient} - Kicks target user - 1000 coins')
         User(m.user.to_s).send('devoice {recipient} - Devoices target user - 2000 coins')
         User(m.user.to_s).send('DEX - Increases your Dexterity attribute - 500 + 50 for each previous upgrade')
-        User(m.user.to_s).send('INT - Increases your Intelligence attribute - 500 + 50 for each previous upgrade')
         User(m.user.to_s).send('STR - Increases your Strength attribute - 500 + 50 for each previous upgrade')
+        User(m.user.to_s).send('INT - Increases your Intelligence attribute - 500 + 50 for each previous upgrade')
         User(m.user.to_s).send('LCK - Increases your Luck attribute - 500 + 50 for each previous upgrade')
     end
 

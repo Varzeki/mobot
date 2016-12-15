@@ -14,12 +14,13 @@ These features currently include:
   * DEX - Upgrades the users Dexterity attribute - 500 coins + 50 for each previous upgrade
   * STR - Upgrades the users Strength attribute - 500 coins + 50 for each previous upgrade
   * INT - Upgrades the users Intelligence attribute - 500 coins + 50 for each previous upgrade
-  * LCK - Upgrades the users Luck attribute - 500 coins + 50 for each previous upgrade
+  * LCK - Upgrades the users Luck attribute - 500 coins + 50 for each previous upgrade (This is the most useful attribute :3)
 * .taytay - Deprecated, used to check taylorswift balance before she died
 * .rob {user} - Attempts to rob another user
 * .attr - Shows the current users attributes
 * .quest - Attempts a quest
 * .pvp - Toggles the users PvP status
+* .bet {amount} - Bets an amount of coins, with a 40% chance to double your offer
 
 #Contribute
 Feature requests and bug reports welcome, along with pull requests - feel free to participate!
