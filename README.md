@@ -32,14 +32,14 @@ These features currently include:
   * leave - Leaves the current crew, or disbands it if you are captain
   * show - Shows the status of your current crew
 
-#Contribute
+##Contribute
 Feature requests and bug reports welcome, along with pull requests - feel free to participate!
 
 You can write a mission for mobot in the format of:
 
 `["Mission Name - Author", "TYPE", reward_amount, "Start of mission text", "Success text", "Failure text"]`
 
-#To Do
+##To Do
 * Add command attribute requirements (e.g 5DEX for robbing)
 * Add PvP (Fight like rob but higher risk with stat use?)
 * Add missions
