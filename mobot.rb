@@ -87,7 +87,7 @@ mobot = Cinch::Bot.new do
 
     #Class for each user
     class Member
-        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily
+        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew
         
 
         #On initialization, only takes name by default
@@ -101,6 +101,9 @@ mobot = Cinch::Bot.new do
 	        @lck = lck
 	        @pvp = false
             @mission = false
+            @crew = '%NONE'
+            @crew_array = []
+            @crew_open = false
         end
 
 
@@ -333,11 +336,16 @@ mobot = Cinch::Bot.new do
             if (user.credits + reward) < 1
                 neg = user.credits
                 user.credits = 0
-                m.reply "That mission netted you #{neg} credits! You now have 0 credits!"
+                m.reply "That mission lost you #{neg} credits! You now have 0 credits!"
             else
                 user.credits = user.credits + reward
                 current = user.credits
-                m.reply "That mission netted you #{reward} credits! You now have #{current} credits!"
+                if reward < 0
+                    reward = reward.abs
+                    m.reply "That mission lost you #{reward} credits! You now have #{current} credits!"
+                else
+                    m.reply "That mission gained you #{reward} credits! You now have #{current} credits!"
+                end
             end
             user.mission = true
             mobot.update_db($members)
@@ -405,10 +413,45 @@ mobot = Cinch::Bot.new do
 	        m.reply "You don't have permission to do that!"
 	    end
     end
+
+    on :message, /^.crew (.+)/ do |m, arg|
+        lst = arg.split(' ')
+        user = mobot.get_user(m.user.to_s, $members)
+        if lst[0] == 'start'
+            if user.crew == "%NONE"
+                user.crew = user.name
+                user.crew_array = [user.name]
+                m.reply "You started a crew!"
+            else
+                m.reply "You're already in a crew!"
+            end
+        end
+        if lst[0] == 'join'
+            if user.crew == "%NONE"
+                user2 = mobot.get_user(lst[1], $members)
+                if not user2.crew == user2.name
+                    m.reply "That user isn't leading a crew!"
+                else
+                    if user2.crew_open == true
+                        user2.crew_array.push(user.name)
+                        user.crew = user2.name
+                        cname = user2.name
+                        m.reply "You just joined the crew of #{cname}!"
+                    else
+                        m.reply "That users crew is closed!"
+                    end
+                end
+            else
+                m.reply "You're already in a crew!"
+            end
+        end
+    end
+
+
 	
     on :message, /^.rob (.+)/ do |m, arg|
         lst = arg.split(' ')
-	robber = mobot.get_user(m.user.to_s, $members)
+	    robber = mobot.get_user(m.user.to_s, $members)
 	    victim = mobot.get_user(lst[0], $members)
 	    if robber.credits > 19 or robber == "uncleleech"
 	        if robber == victim
