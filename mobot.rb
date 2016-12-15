@@ -430,7 +430,7 @@ mobot = Cinch::Bot.new do
             if user.crew == "%NONE"
                 user2 = mobot.get_user(lst[1], $members)
                 if not user2.crew == user2.name
-                    m.reply "That user isn't leading a crew!"
+                    m.reply "That user isn't a crew captain!"
                 else
                     if user2.crew_open == true
                         user2.crew_array.push(user.name)
@@ -443,6 +443,68 @@ mobot = Cinch::Bot.new do
                 end
             else
                 m.reply "You're already in a crew!"
+            end
+        end
+        if lst[0] == 'open'
+            if not user.crew == user.name
+                if not user.crew_open
+                    user.crew_open = true
+                    m.reply "Your crew is now open!"
+                else
+                    m.reply "Your crew is already open!"
+                end
+            else
+                if user.crew == "%NONE"
+                    m.reply "You aren't in a crew!"
+                else
+                    m.reply "You aren't the captain of this crew!"
+                end
+            end
+        end
+        if lst[0] == 'close'
+            if not user.crew == user.name
+                if user.crew_open
+                    user.crew_open = false
+                    m.reply "Your crew is now close!"
+                else
+                    m.reply "Your crew is already closed!"
+                end
+            else
+                if user.crew == "%NONE"
+                    m.reply "You aren't in a crew!"
+                else
+                    m.reply "You aren't the captain of this crew!"
+                end
+            end
+        end
+        if lst[0] == 'leave'
+            if user.crew == user.name
+                user.crew_array.each do |i|
+                    j = mobot.get_user(i, $members)
+                    j.crew = "%NONE"
+                end
+                user.crew_array = []
+                m.reply "You disband the crew!"
+            else
+                user2 = mobot.get_user(user.crew, $members)
+                user2.crew_array = user2.crew_array - user.name
+                user.crew = "%NONE"
+                m.reply "You leave the crew!"
+            end
+        end
+        if lst[0] == 'show'
+            if user.crew == "%NONE"
+                m.reply "You aren't in a crew!"
+            else
+                open = mobot.get_user(user.crew, $members).crew_open
+                if open
+                    status = "OPEN"
+                else
+                    status = "CLOSED"
+                end
+                owner = user.crew
+                members = mobot.get_user(user.crew, $members).crew_array
+                m.reply "This #{status} crew is owned by #{owner} and has members #{members}."
             end
         end
     end
