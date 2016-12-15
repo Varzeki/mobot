@@ -31,6 +31,7 @@ These features currently include:
   * close - Closes a crew to new members
   * leave - Leaves the current crew, or disbands it if you are captain
   * show - Shows the status of your current crew
+
 #Contribute
 Feature requests and bug reports welcome, along with pull requests - feel free to participate!
 
