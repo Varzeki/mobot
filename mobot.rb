@@ -87,13 +87,13 @@ mobot = Cinch::Bot.new do
 
     #Class for each user
     class Member
-        attr_accessor :name, :coins, :dex, :str, :int, :lck, :pvp, :quest, :daily
+        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :quest, :daily
         
 
         #On initialization, only takes name by default
-        def initialize(name, coins = 0, dex = 1, str = 1, int = 1, lck = 1)
+        def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1)
             @name = name
-            @coins = coins
+            @credits = credits
             @daily = false
 	        @dex = dex
 	        @str = str
@@ -106,11 +106,11 @@ mobot = Cinch::Bot.new do
 
         #Helper methods - allows easy management of currency
         def add_trivia(amount)
-            @coins = @coins + amount * 2
+            @credits = @credits + amount * 2
         end
 
         def add_uno(amount)
-            @coins = @coins + amount + 50
+            @credits = @credits + amount + 50
         end
         
 
@@ -118,7 +118,7 @@ mobot = Cinch::Bot.new do
         def daily_claim()
             if not @daily
                 @daily = true
-                @coins = @coins + 250
+                @credits = @credits + 250
 		        val = "Daily claimed!"
 	        else
 		        val = "You already claimed your daily!"
@@ -137,9 +137,9 @@ mobot = Cinch::Bot.new do
         #
         def robbed()
 	        if rand() > 0.8
-		        amount = rand() * @coins/2
+		        amount = rand() * @credits/2
 		        amount = amount.round
-		        @coins = @coins - amount
+		        @credits = @credits - amount
 		        amount
 	        else
 		        0
@@ -163,61 +163,61 @@ mobot = Cinch::Bot.new do
         end
 	    def buy(item, recipient, m)
 	        if item == "kick"
-                    if @coins > 999
-	    	    @coins = @coins - 1000
+                    if @credits > 999
+	    	    @credits = @credits - 1000
 	    	    m.channel.kick(recipient)
 	    	    val = "User kicked!"
 	    	else
-	    	    val = "You need 1000 coins to kick someone!"
+	    	    val = "You need 1000 credits to kick someone!"
 	    	end
 	        end
 	        if item == "devoice"
-                    if @coins > 1999
-	    	    @coins = @coins - 2000
+                    if @credits > 1999
+	    	    @credits = @credits - 2000
 	    	    m.channel.devoice(recipient)
 	    	    val = "User devoiced!"
 	    	else
-	    	    val = "You need 2000 coins to devoice someone!"
+	    	    val = "You need 2000 credits to devoice someone!"
 	    	end
 	        end
 	        if item == "DEX"
 	    	amount = 450 + 50 * @dex
-	    	if @coins > amount - 1
-	    	    @coins = @coins - amount
+	    	if @credits > amount - 1
+	    	    @credits = @credits - amount
 	    	    @dex = @dex + 1
 	    	    val = "DEX upgraded! Your DEX is now #{@dex}!"
 	    	else
-	    	    val = "You need #{amount} coins to upgrade your DEX!"
+	    	    val = "You need #{amount} credits to upgrade your DEX!"
 	    	end
                 end
 	        if item == "INT"
 	    	amount = 450 + 50 * @int
-	    	if @coins > amount - 1
-	    	    @coins = @coins - amount
+	    	if @credits > amount - 1
+	    	    @credits = @credits - amount
 	    	    @int = @int + 1
 	    	    val = "INT upgraded! Your INT is now #{@int}!"
 	    	else
-	    	    val = "You need #{amount} coins to upgrade your INT!"
+	    	    val = "You need #{amount} credits to upgrade your INT!"
 	    	end
                 end
 	        if item == "STR"
 	    	amount = 450 + 50 * @str
-	    	if @coins > amount - 1
-	    	    @coins = @coins - amount
+	    	if @credits > amount - 1
+	    	    @credits = @credits - amount
 	    	    @str = @str + 1
 	    	    val = "STR upgraded! Your STR is now #{@str}!"
 	    	else
-	    	    val = "You need #{amount} coins to upgrade your STR!"
+	    	    val = "You need #{amount} credits to upgrade your STR!"
 	    	end
                 end
 	        if item == "LCK"
 	    	amount = 450 + 50 * @lck
-	    	if @coins > amount - 1
-	    	    @coins = @coins - amount
+	    	if @credits > amount - 1
+	    	    @credits = @credits - amount
 	    	    @lck = @lck + 1
 	    	    val = "LCK upgraded! Your LCK is now #{@lck}!"
 	    	else
-	    	    val = "You need #{amount} coins to upgrade your LCK!"
+	    	    val = "You need #{amount} credits to upgrade your LCK!"
 	    	end
                 end
 	        val
@@ -259,10 +259,10 @@ mobot = Cinch::Bot.new do
 	}
     end
     
-    $quests.push(Quest.new("Steal a relic", "DEX", 60, "You are tasked with stealing an ancient relic from a temple!", "You walk past a completely stationary boulder and grab the idol before pleasantly strolling home.", "There had to be snakes.")) 
-    $quests.push(Quest.new("Kill wandering goblins", "STR", 40, "You set out on a quest to kill some wandering goblins!", "You defeat the goblins and turn in the bounty without incident.", "You are knocked unconscious fighting and lose some coins!")) 
-    $quests.push(Quest.new("Decipher a scroll", "INT", 50, "You spend the day trying to decipher an alchemical scroll.", "After finally decrypting the eldritch dialect, the scroll turns to gold as you mutter the incantation. Woops.", "You use up some gold coins trying to understand the magic and accidentally end up turning the scroll into lead. Woops.")) 
-    $quests.push(Quest.new("Open lockbox", "LCK", 80, "You find a wooden lockbox while walking through a forest glade!", "It contains a collection of small gem encrusted rings!", "You are arrested by the city guard on the way home for carrying stolen property and end up having to pay bail.")) 
+    $quests.push(Quest.new("Recover a starmap", "DEX", 60, "You are tasked with recovering a starmap from an infested derelict ship!", "You accidentally step on a strange spiderlike being on the way out, only to sprint away with the starmap as the others swarm to eat their wounded.", "The ships security AI mistakes you for one of the infested crew and puts the sector on lockdown. It takes you over an hour and all your ammunition to burn your way through the exit.")) 
+    $quests.push(Quest.new("Kill a cartel leader", "STR", 40, "A cartel leader has asked you to help them in an upcoming fight against their rivals!", "You fight side by side with the cartel for several hours until none of the rival cartel are left standing.", "Several minutes into the fray, the cartels leader is struck by a stray laser blast, and the leaderless forces scatter along with your chance of payment.")) 
+    $quests.push(Quest.new("Thaw a cryotube", "INT", 50, "You find a stray cryogenic tube while cruising through space, and spend the day thawing it", "The occupant turns out to be dead, but was carrying a cache of valuable resources.", "You open the canister, and your crew starts coughing as the diseased contents pour out. You use over half your medical supplies treating it.")) 
+    $quests.push(Quest.new("Mine an asteroid field", "LCK", 80, "You come across a field of rich asteroids and try to mine the valuable resources.", "You manage to top up your cargo bay with ore by skirting the edges of the field.", "As you're mining, a chunk of rock breaks off an asteroid and hits the collection arm of your ship, rendering it useless until repaired.")) 
 
     $members.each do |i|
         i.daily_reset
@@ -300,12 +300,12 @@ mobot = Cinch::Bot.new do
 	    mobot.update_db($members)
     end
 
-    on :message,  /^.coins/ do |m|
+    on :message,  /^.credits/ do |m|
 	lst = m.message.split(' ')
 	if lst.length > 1
-	    m.reply mobot.get_user(lst[1], $members).coins
+	    m.reply mobot.get_user(lst[1], $members).credits
         else
-            m.reply mobot.get_user(m.user.to_s, $members).coins
+            m.reply mobot.get_user(m.user.to_s, $members).credits
     	end
     end
 
@@ -330,14 +330,14 @@ mobot = Cinch::Bot.new do
             reward = result[2]
             m.reply result[0]
             m.reply result[1]
-            if (user.coins + reward) < 1
-                neg = user.coins
-                user.coins = 0
-                m.reply "That quest netted you #{neg} coins! You now have 0 coins!"
+            if (user.credits + reward) < 1
+                neg = user.credits
+                user.credits = 0
+                m.reply "That quest netted you #{neg} credits! You now have 0 credits!"
             else
-                user.coins = user.coins + reward
-                current = user.coins
-                m.reply "That quest netted you #{reward} coins! You now have #{current} coins!"
+                user.credits = user.credits + reward
+                current = user.credits
+                m.reply "That quest netted you #{reward} credits! You now have #{current} credits!"
             end
             user.quest = true
             mobot.update_db($members)
@@ -350,23 +350,23 @@ mobot = Cinch::Bot.new do
         
 
     on :message, ".help" do |m|
-        User(m.user.to_s).send("Hi! I'm mobot! I allow you to save up coins via playing games with other bots in irc such as UNOBot or Trivia, and eventually spend them to devoice or kick other $members, even if you don't have permission to do so. Try doing '.daily' to get started.")
+        User(m.user.to_s).send("Hi! I'm mobot! I allow you to save up credits via playing games with other bots in irc such as UNOBot or Trivia, and eventually spend them to devoice or kick other $members, even if you don't have permission to do so. Try doing '.daily' to get started.")
 	    User(m.user.to_s).send('Commands are as follows:')
-	    User(m.user.to_s).send('.daily - Claims your daily 250 coins')
-	    User(m.user.to_s).send('.coins - Shows your current balance')
+	    User(m.user.to_s).send('.daily - Claims your daily 250 credits')
+	    User(m.user.to_s).send('.credits - Shows your current balance')
 	    User(m.user.to_s).send('.purchase {item} [recipient] - Purchases an item')
 	    User(m.user.to_s).send('.store - Lists items for purchase')
 	    User(m.user.to_s).send('.taytay - Shows current taylorswift balance')
-	    User(m.user.to_s).send('.rob - Pay 20 coins to attempt to rob another user')
+	    User(m.user.to_s).send('.rob - Pay 20 credits to attempt to rob another user')
         User(m.user.to_s).send('.attr - Shows your current attributes')
         User(m.user.to_s).send('.quest - Attempt a quest')
         User(m.user.to_s).send('.pvp - Toggles your PvP status')
-        User(m.user.to_s).send('.bet {amount} - Attempt to bet some coins - double or nothing!')
+        User(m.user.to_s).send('.bet {amount} - Attempt to bet some credits - double or nothing!')
     end
 
     on :message, ".store" do |m|
-        User(m.user.to_s).send('kick {recipient} - Kicks target user - 1000 coins')
-        User(m.user.to_s).send('devoice {recipient} - Devoices target user - 2000 coins')
+        User(m.user.to_s).send('kick {recipient} - Kicks target user - 1000 credits')
+        User(m.user.to_s).send('devoice {recipient} - Devoices target user - 2000 credits')
         User(m.user.to_s).send('DEX - Increases your Dexterity attribute - 500 + 50 for each previous upgrade')
         User(m.user.to_s).send('STR - Increases your Strength attribute - 500 + 50 for each previous upgrade')
         User(m.user.to_s).send('INT - Increases your Intelligence attribute - 500 + 50 for each previous upgrade')
@@ -398,7 +398,7 @@ mobot = Cinch::Bot.new do
 	    recipient = lst[1]
 	    if m.user.to_s == 'varzeki'
 	        user = mobot.get_user(recipient, $members)
-	        user.coins = user.coins + amount.to_i
+	        user.credits = user.credits + amount.to_i
 	        m.reply "User credited!"
 	        mobot.update_db($members)
 	    else
@@ -410,21 +410,21 @@ mobot = Cinch::Bot.new do
         lst = arg.split(' ')
 	robber = mobot.get_user(m.user.to_s, $members)
 	    victim = mobot.get_user(lst[0], $members)
-	    if robber.coins > 19 or robber == "uncleleech"
+	    if robber.credits > 19 or robber == "uncleleech"
 	        if robber == victim
 		        m.reply "You're seriously trying to rob yourself? What a masochist!"
 	        end
             amount = victim.robbed
-	        robber.coins = robber.coins + amount - 20
-            current = robber.coins
+	        robber.credits = robber.credits + amount - 20
+            current = robber.credits
             if amount > 0
-                m.reply "You successfully stole #{amount} coins! You now have #{current} coins!"
+                m.reply "You successfully stole #{amount} credits! You now have #{current} credits!"
             else
-                m.reply "You failed to steal anything! You now have #{current} coins!"
+                m.reply "You failed to steal anything! You now have #{current} credits!"
             end
 	        mobot.update_db($members)
 	    else
-	        m.reply "It costs 20 coins to rob someone!"
+	        m.reply "It costs 20 credits to rob someone!"
 	    end
     end
 
@@ -455,15 +455,15 @@ mobot = Cinch::Bot.new do
         lst = arg.split(' ')
         user = mobot.get_user(m.user.to_s, $members)
         if lst[0].to_i > 1
-            if user.coins - lst[0].to_i > -1
+            if user.credits - lst[0].to_i > -1
                 if rand() > 0.6
-                    user.coins = user.coins + lst[0].to_i
-                    amount = user.coins
-                    m.reply "Congratulations, you won! You now have #{amount} coins!"
+                    user.credits = user.credits + lst[0].to_i
+                    amount = user.credits
+                    m.reply "Congratulations, you won! You now have #{amount} credits!"
                 else
-                    user.coins = user.coins - lst[0].to_i
-                    amount = user.coins
-                    m.reply "You lost! You now have #{amount} coins!"
+                    user.credits = user.credits - lst[0].to_i
+                    amount = user.credits
+                    m.reply "You lost! You now have #{amount} credits!"
                 end
             end
         end
