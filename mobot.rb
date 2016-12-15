@@ -332,7 +332,7 @@ mobot = Cinch::Bot.new do
             if not user.crew == "%NONE"
                 statblock = []
                 mobot.get_user(user.crew, $members).crew_array.each do |i|
-                    statblock.push(i.get_stats) 
+                    statblock.push(mobot.get_user(i, $members).get_stats) 
                 end
                 stats = [1, 1, 1, 1]
                 statblock.each do |i|
@@ -349,7 +349,7 @@ mobot = Cinch::Bot.new do
                 m.reply result[1]
                 user.mission = true
                 mobot.get_user(user.crew, $members).crew_array.each do |i|
-                    if (i.credits + reward) < 1
+                    if (mobot.get_user(i, $members).credits + reward) < 1
                         user.credits = 0
                     else
                         i.credits = i.credits + reward
