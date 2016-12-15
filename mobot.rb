@@ -9,7 +9,7 @@ config = YAML.load_file("config.yaml")
 
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
-$quests = []
+$missions = []
 
 #Main bot definition
 mobot = Cinch::Bot.new do
@@ -25,13 +25,13 @@ mobot = Cinch::Bot.new do
         db.write(Marshal.dump(cont))
         db.close
     end
-    def update_quests(cont)
-        db = File.open('./quests', 'w')
+    def update_missions(cont)
+        db = File.open('./missions', 'w')
         db.write(Marshal.dump(cont))
         db.close
     end
 
-    class Quest
+    class Mission
         attr_accessor :name, :type, :reward, :start, :success, :failure
 
         def initialize(name, type, reward, start, success, failure)
@@ -87,7 +87,7 @@ mobot = Cinch::Bot.new do
 
     #Class for each user
     class Member
-        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :quest, :daily
+        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily
         
 
         #On initialization, only takes name by default
@@ -100,7 +100,7 @@ mobot = Cinch::Bot.new do
 	        @int = int
 	        @lck = lck
 	        @pvp = false
-            @quest = false
+            @mission = false
         end
 
 
@@ -158,8 +158,8 @@ mobot = Cinch::Bot.new do
 	    def daily_reset()
 	        @daily = false
 	    end
-        def quest_reset()
-            @quest = false
+        def mission_reset()
+            @mission = false
         end
 	    def buy(item, recipient, m)
 	        if item == "kick"
@@ -259,14 +259,14 @@ mobot = Cinch::Bot.new do
 	}
     end
     
-    $quests.push(Quest.new("Recover a starmap", "DEX", 60, "You are tasked with recovering a starmap from an infested derelict ship!", "You accidentally step on a strange spiderlike being on the way out, only to sprint away with the starmap as the others swarm to eat their wounded.", "The ships security AI mistakes you for one of the infested crew and puts the sector on lockdown. It takes you over an hour and all your ammunition to burn your way through the exit.")) 
-    $quests.push(Quest.new("Kill a cartel leader", "STR", 40, "A cartel leader has asked you to help them in an upcoming fight against their rivals!", "You fight side by side with the cartel for several hours until none of the rival cartel are left standing.", "Several minutes into the fray, the cartels leader is struck by a stray laser blast, and the leaderless forces scatter along with your chance of payment.")) 
-    $quests.push(Quest.new("Thaw a cryotube", "INT", 50, "You find a stray cryogenic tube while cruising through space, and spend the day thawing it", "The occupant turns out to be dead, but was carrying a cache of valuable resources.", "You open the canister, and your crew starts coughing as the diseased contents pour out. You use over half your medical supplies treating it.")) 
-    $quests.push(Quest.new("Mine an asteroid field", "LCK", 80, "You come across a field of rich asteroids and try to mine the valuable resources.", "You manage to top up your cargo bay with ore by skirting the edges of the field.", "As you're mining, a chunk of rock breaks off an asteroid and hits the collection arm of your ship, rendering it useless until repaired.")) 
+    $missions.push(Mission.new("Recover a starmap", "DEX", 60, "You are tasked with recovering a starmap from an infested derelict ship!", "You accidentally step on a strange spiderlike being on the way out and enrage the hive, only to sprint away with the starmap as the others swarm to eat their wounded.", "The ships security AI mistakes you for one of the infested crew and puts the sector on lockdown. It takes you over an hour and all your ammunition to burn your way through the exit.")) 
+    $missions.push(Mission.new("Kill a cartel leader", "STR", 40, "A cartel leader has asked you to help them in an upcoming fight against their rivals!", "You fight side by side with the cartel for several hours until none of the rival cartel are left standing.", "Several minutes into the fray, the cartels leader is struck by a stray laser blast, and the leaderless forces scatter along with your chance of payment.")) 
+    $missions.push(Mission.new("Thaw a cryotube", "INT", 50, "You find a stray cryogenic tube while cruising through space, and spend the day thawing it", "The occupant turns out to be dead, but was carrying a cache of valuable resources.", "You open the canister, and your crew starts coughing as the diseased contents pour out. You use over half your medical supplies treating it.")) 
+    $missions.push(Mission.new("Mine an asteroid field", "LCK", 80, "You come across a field of rich asteroids and try to mine the valuable resources.", "You manage to top up your cargo bay with ore by skirting the edges of the field.", "As you're mining, a chunk of rock breaks off an asteroid and hits the collection arm of your ship, rendering it useless until repaired.")) 
 
     $members.each do |i|
         i.daily_reset
-        i.quest_reset
+        i.mission_reset
     end
 
     Timer(300) {
@@ -322,29 +322,29 @@ mobot = Cinch::Bot.new do
         m.reply mobot.get_user(m.user.to_s, $members).pvp
     end
 
-    on :message, ".quest" do |m|
-        quest = $quests.sample
+    on :message, ".mission" do |m|
+        mission = $missions.sample
         user = mobot.get_user(m.user.to_s, $members)
-        if user.quest == false
-            result = quest.attempt(user.get_stats)
+        if user.mission == false
+            result = mission.attempt(user.get_stats)
             reward = result[2]
             m.reply result[0]
             m.reply result[1]
             if (user.credits + reward) < 1
                 neg = user.credits
                 user.credits = 0
-                m.reply "That quest netted you #{neg} credits! You now have 0 credits!"
+                m.reply "That mission netted you #{neg} credits! You now have 0 credits!"
             else
                 user.credits = user.credits + reward
                 current = user.credits
-                m.reply "That quest netted you #{reward} credits! You now have #{current} credits!"
+                m.reply "That mission netted you #{reward} credits! You now have #{current} credits!"
             end
-            user.quest = true
+            user.mission = true
             mobot.update_db($members)
             sleep(180)
-            user.quest = false
+            user.mission = false
         else
-            m.reply "You already went on a quest recently! Take a break for a minute or three."
+            m.reply "You already went on a mission recently! Take a break for a minute or three."
         end
     end
         
@@ -359,7 +359,7 @@ mobot = Cinch::Bot.new do
 	    User(m.user.to_s).send('.taytay - Shows current taylorswift balance')
 	    User(m.user.to_s).send('.rob - Pay 20 credits to attempt to rob another user')
         User(m.user.to_s).send('.attr - Shows your current attributes')
-        User(m.user.to_s).send('.quest - Attempt a quest')
+        User(m.user.to_s).send('.mission - Attempt a mission')
         User(m.user.to_s).send('.pvp - Toggles your PvP status')
         User(m.user.to_s).send('.bet {amount} - Attempt to bet some credits - double or nothing!')
     end
@@ -392,7 +392,7 @@ mobot = Cinch::Bot.new do
 	    end
        end
 
-    on :message, /^.credit (.+)/ do |m, arg|
+    on :message, /^.cmod (.+)/ do |m, arg|
         lst = arg.split(' ')
 	    amount = lst[0]
 	    recipient = lst[1]
@@ -444,7 +444,7 @@ mobot = Cinch::Bot.new do
         m.reply "Migrating database..."
         new_db = []
         $members.each do |i|
-            new_db.push(Member.new(i.name, i.coins, i.dex, i.str, i.int, i.lck))
+            new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck))
         end
         $members = new_db
         mobot.update_db($members)
