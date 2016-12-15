@@ -465,7 +465,7 @@ mobot = Cinch::Bot.new do
             if user.crew == user.name
                 if user.crew_open
                     user.crew_open = false
-                    m.reply "Your crew is now close!"
+                    m.reply "Your crew is now closed!"
                 else
                     m.reply "Your crew is already closed!"
                 end
@@ -487,7 +487,7 @@ mobot = Cinch::Bot.new do
                 m.reply "You disband the crew!"
             else
                 user2 = mobot.get_user(user.crew, $members)
-                user2.crew_array = user2.crew_array - user.name
+                user2.crew_array = user2.crew_array - [user.name]
                 user.crew = "%NONE"
                 m.reply "You leave the crew!"
             end
