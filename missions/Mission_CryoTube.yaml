@@ -1,0 +1,7 @@
+title: Thaw a cryotube
+authors: [ Varzeki ]
+attr: INT
+reward: 50
+info: You find a stray cryogenic tube while cruising through space, and spend the day thawing it.
+success: The occupant turns out to be dead, but was carrying a cache of valuable resources.
+fail: You open the canister, and your crew starts coughing as the diseased contents pour out. You use over half your medical supplies treating it.
