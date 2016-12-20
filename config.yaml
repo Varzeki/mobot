@@ -1,7 +1,7 @@
 config:
-    server: irc.rizon.net
+    server: irc.server.tld
     port: 6667
-    nick: mobot
-    channels: ['#homescreen', '#taytay', '#bro', "#oblivion"]
-    realname: themobo
-    password: clocks
+    nick: default_nickname
+    channels: ['#put, '#your', '#channels', "#here"]
+    realname: default_realname
+    password: password
