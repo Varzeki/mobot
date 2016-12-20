@@ -1,6 +1,12 @@
 # Mobot
 For when you're in love with the mobo.
 
+##Dependencies
+
+```
+gem install cinch cinch-identify yaml
+```
+
 ##Introduction
 Mobot is an IRC bot written in Ruby, with the help of the cinch library. It allows users to gain currency through the user of other bots, and ultimately spend it to use administration commands they don't have privileges for.
 

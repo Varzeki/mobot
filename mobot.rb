@@ -1,7 +1,8 @@
 require 'cinch'
-require "cinch/plugins/identify"
+require 'cinch/plugins/identify'
 require 'yaml'
 
+require_relative "missions"
 
 #Load config using YAML
 config = YAML.load_file("config.yaml")
@@ -13,7 +14,6 @@ $missions = []
 
 #Main bot definition
 mobot = Cinch::Bot.new do
-    
 
     #Holds threads created by methods - mostly timers
     threads = []
@@ -25,81 +25,22 @@ mobot = Cinch::Bot.new do
         db.write(Marshal.dump(cont))
         db.close
     end
-    def update_missions(cont)
-        db = File.open('./missions', 'w')
-        db.write(Marshal.dump(cont))
-        db.close
-    end
 
-    class Mission
-        attr_accessor :name, :type, :reward, :start, :success, :failure
-
-        def initialize(name, type, reward, start, success, failure)
-            @name = name
-            @type = type
-            @reward = reward
-            @start = start
-            @success = success
-            @failure = failure
-        end
-
-        def attempt(stats)
-            responses = [@start]
-            if @type == "DEX"
-                if rand() > 0.3
-                    responses.push(@success)
-                    responses.push(@reward + ((stats[0] * 7) + (stats[3] * 2)))
-                else
-                    responses.push(@failure)
-                    responses.push(0 - ((@reward).round - stats[3]))
-                end
-            end
-            if @type == "STR"
-                if rand() > 0.3
-                    responses.push(@success)
-                    responses.push(@reward + ((stats[1] * 7) + (stats[3] * 2)))
-                else
-                    responses.push(@failure)
-                    responses.push(0 - ((@reward).round - stats[3]))
-                end
-            end
-            if @type == "INT"
-                if rand() > 0.3
-                    responses.push(@success)
-                    responses.push(@reward + ((stats[2] * 7) + (stats[3] * 2)))
-                else
-                    responses.push(@failure)
-                    responses.push(0 - ((@reward).round - stats[3]))
-                end
-            end
-            if @type == "LCK"
-                if rand() > 0.3
-                    responses.push(@success)
-                    responses.push(@reward + (stats[3] * 9))
-                else
-                    responses.push(@failure)
-                    responses.push(0 - ((@reward).round - stats[3]))
-                end
-            end
-            responses
-        end
-    end
 
     #Class for each user
     class Member
         attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew, :crew_array, :crew_open
-        
 
         #On initialization, only takes name by default
         def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1)
             @name = name
             @credits = credits
             @daily = false
-	        @dex = dex
-	        @str = str
-	        @int = int
-	        @lck = lck
-	        @pvp = false
+  	        @dex = dex
+  	        @str = str
+  	        @int = int
+  	        @lck = lck
+  	        @pvp = false
             @mission = false
             @crew = '%NONE'
             @crew_array = []
@@ -254,19 +195,16 @@ mobot = Cinch::Bot.new do
         c.port = config['config']['port'].to_s
         c.nick = config['config']['nick'].to_s
         c.channels = config['config']['channels']
-	    c.delay_joins = :identified
+        c.delay_joins = :identified
         c.plugins.plugins = [Cinch::Plugins::Identify]
-	    c.plugins.options[Cinch::Plugins::Identify] = {
-	    :password => config['config']['password'],
-	    :type => :nickserv,
-	}
+        c.plugins.options[Cinch::Plugins::Identify] = {
+      	    :password => config['config']['password'],
+      	    :type => :nickserv,
+	      }
     end
 
-    $missions.push(Mission.new("The Jade Figurine - Lysana & Undertaker", "DEX", 70, "You find a rare jade figurine that belongs to a Chinese politician. He send a group of ninjas to hunt you down and reclaim it.", "Despite all odds your agile maneuvering is enough to allude the ninjas. Impressed, they report back to their leader, and you are allowed to keep the figurine.", "Unable to escape the ninjas, you are forced to leave the figurine behind. As you do, the ninjas stop their chase, and you come home to binge on healbot syringes, licking your wounds on the close escape."))
-    $missions.push(Mission.new("Recover a starmap", "DEX", 60, "You are tasked with recovering a starmap from an infested derelict ship!", "You accidentally step on a strange spiderlike being on the way out and enrage the hive, only to sprint away with the starmap as the others swarm to eat their wounded.", "The ships security AI mistakes you for one of the infested crew and puts the sector on lockdown. It takes you over an hour and all your ammunition to burn your way through the exit."))
-    $missions.push(Mission.new("Kill a cartel leader", "STR", 40, "A cartel leader has asked you to help them in an upcoming fight against their rivals!", "You fight side by side with the cartel for several hours until none of the rival cartel are left standing.", "Several minutes into the fray, the cartels leader is struck by a stray laser blast, and the leaderless forces scatter along with your chance of payment."))
-    $missions.push(Mission.new("Thaw a cryotube", "INT", 50, "You find a stray cryogenic tube while cruising through space, and spend the day thawing it", "The occupant turns out to be dead, but was carrying a cache of valuable resources.", "You open the canister, and your crew starts coughing as the diseased contents pour out. You use over half your medical supplies treating it."))
-    $missions.push(Mission.new("Mine an asteroid field", "LCK", 80, "You come across a field of rich asteroids and try to mine the valuable resources.", "You manage to top up your cargo bay with ore by skirting the edges of the field.", "As you're mining, a chunk of rock breaks off an asteroid and hits the collection arm of your ship, rendering it useless until repaired."))
+    #$missions.push(Mission.new("The Jade Figurine - Lysana & Undertaker", "DEX", 70, "You find a rare jade figurine that belongs to a Chinese politician. He send a group of ninjas to hunt you down and reclaim it.", "Despite all odds your agile maneuvering is enough to allude the ninjas. Impressed, they report back to their leader, and you are allowed to keep the figurine.", "Unable to escape the ninjas, you are forced to leave the figurine behind. As you do, the ninjas stop their chase, and you come home to binge on healbot syringes, licking your wounds on the close escape."))
+    $missions.concat(loadMissions())
 
     $members.each do |i|
         i.daily_reset

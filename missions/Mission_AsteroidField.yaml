@@ -1,0 +1,7 @@
+title: Mine an asteroid field
+authors: [ Varzeki ]
+attr: LCK
+reward: 80
+info: You come across a field of rich asteroids and try to mine the valuable resources.
+success: You manage to top up your cargo bay with ore by skirting the edges of the field.
+fail: As you're mining, a chunk of rock breaks off an asteroid and hits the collection arm of your ship, rendering it useless until repaired.
