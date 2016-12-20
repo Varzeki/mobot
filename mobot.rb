@@ -56,7 +56,7 @@ mobot = Cinch::Bot.new do
         def add_uno(amount)
             @credits = @credits + amount + 50
         end
-        
+
 
         #Toggles per user daily variable - NOT responsible for threaded timing
         def daily_claim()
@@ -186,7 +186,7 @@ mobot = Cinch::Bot.new do
     rescue
 	    puts "Failed to load database!"
     end
-    
+
     #Initial Bot Config
     configure do |c|
         c.realname = config['config']['realname']
@@ -252,6 +252,10 @@ mobot = Cinch::Bot.new do
     end
 
     on :message, ".attr" do |m|
+    lst = m.message.split(' ')
+    if lst.length > 1
+      m.reply mobot.get_user(lst[1], $members).stats
+      end
         stats = mobot.get_user(m.user.to_s, $members).get_stats
         m.reply "DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s}"
     end
@@ -271,7 +275,7 @@ mobot = Cinch::Bot.new do
             if not user.crew == "%NONE"
                 statblock = []
                 mobot.get_user(user.crew, $members).crew_array.each do |i|
-                    statblock.push(mobot.get_user(i, $members).get_stats) 
+                    statblock.push(mobot.get_user(i, $members).get_stats)
                 end
                 stats = [1, 1, 1, 1]
                 statblock.each do |i|
@@ -332,7 +336,7 @@ mobot = Cinch::Bot.new do
             m.reply "You already went on a mission recently! Take a break for a minute or three."
         end
     end
-        
+
 
     on :message, ".help" do |m|
         User(m.user.to_s).send("Hi! I'm mobot! I allow you to save up credits via playing games with other bots in irc such as UNOBot or Trivia, and eventually spend them to devoice or kick other $members, even if you don't have permission to do so. Try doing '.daily' to get started.")
@@ -500,7 +504,7 @@ mobot = Cinch::Bot.new do
     end
 
 
-	
+
     on :message, /^.rob (.+)/ do |m, arg|
         lst = arg.split(' ')
 	    robber = mobot.get_user(m.user.to_s, $members)
@@ -573,4 +577,3 @@ mobot.loggers.first.level = :info
 
 #Start
 mobot.start
-
