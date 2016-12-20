@@ -207,9 +207,9 @@ mobot = Cinch::Bot.new do
         c.delay_joins = :identified
         c.plugins.plugins = [Cinch::Plugins::Identify]
         c.plugins.options[Cinch::Plugins::Identify] = {
-            :password => config['config']['password'],
-            :type => :nickserv,
-          }
+      	    :password => config['config']['password'],
+      	    :type => :nickserv,
+	    }
     end
 
     $missions.concat(loadMissions())
@@ -251,9 +251,9 @@ mobot = Cinch::Bot.new do
     end
 
     on :message,  /^.credits/ do |m|
-        lst = m.message.split(' ')
-        if lst.length > 1
-            m.reply mobot.get_user(lst[1], $members).credits
+    	lst = m.message.split(' ')
+    	if lst.length > 1
+    	    m.reply mobot.get_user(lst[1], $members).credits
         else
             m.reply mobot.get_user(m.user.to_s, $members).credits
         end
