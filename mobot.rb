@@ -12,7 +12,7 @@ $members = []
 $admins = []
 $missions = []
 
-if config.key? "admins"
+if !config.key? "admins"
     config["admins"] = config.fetch( "admins", [] )
 end
 
@@ -23,7 +23,6 @@ mobot = Cinch::Bot.new do
 
     #Holds threads created by methods - mostly timers
     threads = []
-
 
     #Should be called whenever the database is changed for any reason
     def update_db(cont)
@@ -417,7 +416,7 @@ mobot = Cinch::Bot.new do
     on :message, /^.admin (.+)/ do |m, arg|
         lst = arg.split(' ')
 	    recipient = lst[0]
-	    if !(config["admins"].include? recipient) && $admins.include? m.user.to_s
+	    if (!config["admins"].include? recipient) && ($admins.include? m.user.to_s)
             if $admins.include? recipient
                 $admins.delete_at($admins.find_index(recipient))
     	        m.reply "#{recipient} was removed from admins."
