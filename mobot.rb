@@ -7,10 +7,16 @@ require_relative "missions"
 #Load config using YAML
 config = YAML.load_file("config.yaml")
 
-
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
+$admins = []
 $missions = []
+
+if config.key? "admins"
+    config["admins"] = config.fetch( "admins", [] )
+end
+
+$admins.concat config["admins"]
 
 #Main bot definition
 mobot = Cinch::Bot.new do
@@ -56,7 +62,7 @@ mobot = Cinch::Bot.new do
         def add_uno(amount)
             @credits = @credits + amount + 50
         end
-        
+
 
         #Toggles per user daily variable - NOT responsible for threaded timing
         def daily_claim()
@@ -107,63 +113,63 @@ mobot = Cinch::Bot.new do
         end
 	    def buy(item, recipient, m)
 	        if item == "kick"
-                    if @credits > 999
-	    	    @credits = @credits - 1000
-	    	    m.channel.kick(recipient)
-	    	    val = "User kicked!"
-	    	else
-	    	    val = "You need 1000 credits to kick someone!"
-	    	end
+                if @credits > 999
+    	    	    @credits = @credits - 1000
+    	    	    m.channel.kick(recipient)
+    	    	    val = "User kicked!"
+    	    	else
+    	    	    val = "You need 1000 credits to kick someone!"
+    	    	end
 	        end
 	        if item == "devoice"
-                    if @credits > 1999
-	    	    @credits = @credits - 2000
-	    	    m.channel.devoice(recipient)
-	    	    val = "User devoiced!"
-	    	else
-	    	    val = "You need 2000 credits to devoice someone!"
-	    	end
+                if @credits > 1999
+    	    	    @credits = @credits - 2000
+    	    	    m.channel.devoice(recipient)
+    	    	    val = "User devoiced!"
+    	    	else
+    	    	    val = "You need 2000 credits to devoice someone!"
+    	    	end
 	        end
 	        if item == "DEX"
-	    	amount = 450 + 50 * @dex
-	    	if @credits > amount - 1
-	    	    @credits = @credits - amount
-	    	    @dex = @dex + 1
-	    	    val = "DEX upgraded! Your DEX is now #{@dex}!"
-	    	else
-	    	    val = "You need #{amount} credits to upgrade your DEX!"
-	    	end
-                end
+    	        amount = 450 + 50 * @dex
+    	    	if @credits > amount - 1
+    	    	    @credits = @credits - amount
+    	    	    @dex = @dex + 1
+    	    	    val = "DEX upgraded! Your DEX is now #{@dex}!"
+    	    	else
+    	    	    val = "You need #{amount} credits to upgrade your DEX!"
+    	    	end
+            end
 	        if item == "INT"
-	    	amount = 450 + 50 * @int
-	    	if @credits > amount - 1
-	    	    @credits = @credits - amount
-	    	    @int = @int + 1
-	    	    val = "INT upgraded! Your INT is now #{@int}!"
-	    	else
-	    	    val = "You need #{amount} credits to upgrade your INT!"
-	    	end
-                end
+    	        amount = 450 + 50 * @int
+    	    	if @credits > amount - 1
+    	    	    @credits = @credits - amount
+    	    	    @int = @int + 1
+    	    	    val = "INT upgraded! Your INT is now #{@int}!"
+    	    	else
+    	    	    val = "You need #{amount} credits to upgrade your INT!"
+    	    	end
+            end
 	        if item == "STR"
-	    	amount = 450 + 50 * @str
-	    	if @credits > amount - 1
-	    	    @credits = @credits - amount
-	    	    @str = @str + 1
-	    	    val = "STR upgraded! Your STR is now #{@str}!"
-	    	else
-	    	    val = "You need #{amount} credits to upgrade your STR!"
-	    	end
-                end
+    	        amount = 450 + 50 * @str
+    	    	if @credits > amount - 1
+    	    	    @credits = @credits - amount
+    	    	    @str = @str + 1
+    	    	    val = "STR upgraded! Your STR is now #{@str}!"
+    	    	else
+    	    	    val = "You need #{amount} credits to upgrade your STR!"
+    	    	end
+            end
 	        if item == "LCK"
-	    	amount = 450 + 50 * @lck
-	    	if @credits > amount - 1
-	    	    @credits = @credits - amount
-	    	    @lck = @lck + 1
-	    	    val = "LCK upgraded! Your LCK is now #{@lck}!"
-	    	else
-	    	    val = "You need #{amount} credits to upgrade your LCK!"
-	    	end
-                end
+    	        amount = 450 + 50 * @lck
+    	    	if @credits > amount - 1
+    	    	    @credits = @credits - amount
+    	    	    @lck = @lck + 1
+    	    	    val = "LCK upgraded! Your LCK is now #{@lck}!"
+    	    	else
+    	    	    val = "You need #{amount} credits to upgrade your LCK!"
+    	    	end
+            end
 	        val
 	    end
     end
@@ -184,9 +190,9 @@ mobot = Cinch::Bot.new do
     begin
         $members = Marshal.load File.read('./database')
     rescue
-	    puts "Failed to load database!"
+	     puts "Failed to load database!"
     end
-    
+
     #Initial Bot Config
     configure do |c|
         c.realname = config['config']['realname']
@@ -200,10 +206,9 @@ mobot = Cinch::Bot.new do
         c.plugins.options[Cinch::Plugins::Identify] = {
       	    :password => config['config']['password'],
       	    :type => :nickserv,
-	      }
+	    }
     end
 
-    #$missions.push(Mission.new("The Jade Figurine - Lysana & Undertaker", "DEX", 70, "You find a rare jade figurine that belongs to a Chinese politician. He send a group of ninjas to hunt you down and reclaim it.", "Despite all odds your agile maneuvering is enough to allude the ninjas. Impressed, they report back to their leader, and you are allowed to keep the figurine.", "Unable to escape the ninjas, you are forced to leave the figurine behind. As you do, the ninjas stop their chase, and you come home to binge on healbot syringes, licking your wounds on the close escape."))
     $missions.concat(loadMissions())
 
     $members.each do |i|
@@ -221,8 +226,8 @@ mobot = Cinch::Bot.new do
 
     on :message, /^SEND (#.+)/ do |m, args|
         lst = args.split(' ')
-	contents = lst[1..lst.length].join(' ')
-	Channel(lst[0]).send(contents)
+    	contents = lst[1..lst.length].join(' ')
+    	Channel(lst[0]).send(contents)
     end
 
     on :message, /^MESSAGE (.+)/ do |m, args|
@@ -243,9 +248,9 @@ mobot = Cinch::Bot.new do
     end
 
     on :message,  /^.credits/ do |m|
-	lst = m.message.split(' ')
-	if lst.length > 1
-	    m.reply mobot.get_user(lst[1], $members).credits
+    	lst = m.message.split(' ')
+    	if lst.length > 1
+    	    m.reply mobot.get_user(lst[1], $members).credits
         else
             m.reply mobot.get_user(m.user.to_s, $members).credits
     	end
@@ -271,7 +276,7 @@ mobot = Cinch::Bot.new do
             if not user.crew == "%NONE"
                 statblock = []
                 mobot.get_user(user.crew, $members).crew_array.each do |i|
-                    statblock.push(mobot.get_user(i, $members).get_stats) 
+                    statblock.push(mobot.get_user(i, $members).get_stats)
                 end
                 stats = [1, 1, 1, 1]
                 statblock.each do |i|
@@ -332,7 +337,7 @@ mobot = Cinch::Bot.new do
             m.reply "You already went on a mission recently! Take a break for a minute or three."
         end
     end
-        
+
 
     on :message, ".help" do |m|
         User(m.user.to_s).send("Hi! I'm mobot! I allow you to save up credits via playing games with other bots in irc such as UNOBot or Trivia, and eventually spend them to devoice or kick other $members, even if you don't have permission to do so. Try doing '.daily' to get started.")
@@ -387,11 +392,27 @@ mobot = Cinch::Bot.new do
         lst = arg.split(' ')
 	    amount = lst[0]
 	    recipient = lst[1]
-	    if m.user.to_s == 'varzeki'
+	    if $admins.include? m.user.to_s
 	        user = mobot.get_user(recipient, $members)
 	        user.credits = user.credits + amount.to_i
 	        m.reply "User credited!"
 	        mobot.update_db($members)
+	    else
+	        m.reply "You don't have permission to do that!"
+	    end
+    end
+
+    on :message, /^.admin (.+)/ do |m, arg|
+        lst = arg.split(' ')
+	    recipient = lst[0]
+	    if !(config["admins"].include? recipient) && $admins.include? m.user.to_s
+            if $admins.include? recipient
+                $admins.delete_at($admins.find_index(recipient))
+    	        m.reply "#{recipient} was removed from admins."
+            else
+                $admins.push(recipient)
+    	        m.reply "#{recipient} was added as an admin."
+            end
 	    else
 	        m.reply "You don't have permission to do that!"
 	    end
@@ -500,7 +521,7 @@ mobot = Cinch::Bot.new do
     end
 
 
-	
+
     on :message, /^.rob (.+)/ do |m, arg|
         lst = arg.split(' ')
 	    robber = mobot.get_user(m.user.to_s, $members)
@@ -573,4 +594,3 @@ mobot.loggers.first.level = :info
 
 #Start
 mobot.start
-
