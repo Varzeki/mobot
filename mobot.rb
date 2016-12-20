@@ -11,6 +11,7 @@ config = YAML.load_file("config.yaml")
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
 $missions = []
+$corporations = []
 
 #Main bot definition
 mobot = Cinch::Bot.new do
@@ -26,6 +27,28 @@ mobot = Cinch::Bot.new do
         db.close
     end
 
+    class Corporation
+        attr_accessor :name, :leader, :bank, :syndicate, :tier1, :tier2
+
+        def initialize(name, leader, bank=0)
+            @name = name
+            @bank = bank
+            @syndicate = false
+            @leader = leader
+            @tier1 = []
+            @tier2 = []
+            @invited = []
+        end
+
+        def daily_reduction
+            @bank = @bank - 350
+            if @bank < 0
+                @syndicate = true
+                return @name
+            end
+        end
+
+    end
 
     #Class for each user
     class Member
@@ -45,6 +68,7 @@ mobot = Cinch::Bot.new do
             @crew = '%NONE'
             @crew_array = []
             @crew_open = false
+            @corp = '%NONE'
         end
 
 
@@ -78,7 +102,6 @@ mobot = Cinch::Bot.new do
         #Helper method to return stats in an array
         def get_stats()
             val = [@dex, @str, @int, @lck]
-            val
         end
 
 
@@ -409,6 +432,37 @@ mobot = Cinch::Bot.new do
         end
     end
 
+    on :message, /^.corp (.+)/ do |m, arg|
+        lst = arg.split(' ')
+        user = mobot.get_user(m.user.to_s)
+        m.reply lst
+        if lst[0] == 'create'
+            if user.corp == '%NONE'
+                if lst.length > 2
+                    if not $corporations.include? lst[1]
+                        if user.credits > 14999
+                            user.credits = user.credits - 15000
+                            $corporations.push(Corporation.new(lst[1..lst.length].join(' '), m.user.to_s))
+                            user.corp = lst[1]
+                        else
+                            m.reply "You need 15000 credits to start a corporation!"
+                        end
+                    else
+                        m.reply "That corporation already exists!"
+                    end
+                else
+                    m.reply "You need to give your corporation a name!"
+                end
+            else
+                m.reply "You're already in a corporation!"
+            end
+        end
+        if lst[0] == 'join'
+            if user.corp == '%NONE'
+                if lst.length > 2
+                    
+
+
     on :message, /^.crew (.+)/ do |m, arg|
         lst = arg.split(' ')
         user = mobot.get_user(m.user.to_s, $members)
@@ -422,6 +476,15 @@ mobot = Cinch::Bot.new do
             else
                 m.reply "You're already in a crew!"
             end
+        end
+        if lst[0] == 'help'
+            m.user.send('Available crew commands:')
+            m.user.send('.crew start')
+            m.user.send('.crew join {leader}')
+            m.user.send('.crew leave')
+            m.user.send('.crew open')
+            m.user.send('.crew close')
+            m.user.send('.crew show')
         end
         if lst[0] == 'join'
             if user.crew == "%NONE"
