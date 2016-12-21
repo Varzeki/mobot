@@ -2,6 +2,6 @@ config:
     server: irc.server.tld
     port: 6667
     nick: default_nickname
-    channels: ['#put, '#your', '#channels', "#here"]
+    channels: ['#put', '#your', '#channels', "#here"]
     realname: default_realname
     password: password
