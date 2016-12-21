@@ -28,7 +28,7 @@ mobot = Cinch::Bot.new do
     end
 
     class Corporation
-        attr_accessor :name, :leader, :bank, :syndicate, :tier1, :tier2
+        attr_accessor :name, :leader, :bank, :syndicate, :tier1, :tier2, :invited
 
         def initialize(name, leader, bank=0)
             @name = name
@@ -443,7 +443,9 @@ mobot = Cinch::Bot.new do
                         if user.credits > 14999
                             user.credits = user.credits - 15000
                             $corporations.push(Corporation.new(lst[1..lst.length].join(' '), m.user.to_s))
-                            user.corp = lst[1]
+                            user.corp = lst[1..lst,length].join(' ')
+                            get_corp(user.corp).tier1.push(user.name)
+                            m.reply "You pay the 15000 startup cost and create a new corporation!"
                         else
                             m.reply "You need 15000 credits to start a corporation!"
                         end
@@ -460,7 +462,74 @@ mobot = Cinch::Bot.new do
         if lst[0] == 'join'
             if user.corp == '%NONE'
                 if lst.length > 2
-                    
+                    corp = get_corp(lst[1..lst.length].join(' '))
+                    if not corp == '%NONE'
+                        if corp.invited.include? m.user.to_s
+                            if user.credits > 499
+                                user.credits = user.credits - 500
+                                user.corp = lst[1..lst,length].join(' ')
+                                corp.tier2.push(m.user.to_s)
+                                corp.invited = corp.invited - [user.name]
+                                joined = corp.name
+                                m.reply "You paid the entry cost of 500 coins and joined #{joined}!"
+                        else
+                            m.reply "You havn't been invited to that corporation!"
+                        end
+                    else
+                        m.reply "That corporation doesn't exist!"
+                    end
+                else
+                    m.reply "That corporation doesn't exist!"
+                end
+            else
+                m.reply "You're already in a corporation!"
+            end
+        end
+        if lst[0] == 'leave'
+            if not user.corp == '%NONE'
+                corp = get_corp(user.corp)
+                if corp.leader == user.name
+                    members = corp.tier1 + corp.tier2
+                    members.each do |i|
+                        mobot.get_user(i, $members).corp = '%NONE'
+                    end
+                    $corporations = $corporations - corp
+                    m.reply "You disband the corporation!"
+                else
+                    if corp.tier1.include? user.name
+                        corp.tier1 = corp.tier1 - user.name
+                    end
+                    if corp.tier2.include? user.name
+                        corp.tier2 = corp.tier1 - user.name
+                    end
+                    user.corp = '%NONE'
+                    m.reply "You leave the corporation!"
+                end
+            else
+                m.reply "You aren't in a corporation!"
+            end
+        end
+        if lst[0] == 'invite'
+            if not user.corp == '%NONE'
+                corp = get_corp(user.corp)
+                if corp.tier1.include? user.name
+                    if lst.length > 2
+                        inv = lst[3]
+                        corp.invited.push(inv)
+                        m.reply "You just invited #{inv} to the corporation!"
+                    else
+                        m.reply "You didn't specify a user!"
+                    end
+                else
+                    m.reply "You don't have permission to do that!"
+                end
+            else
+                m.reply "You aren't in a corporation!"
+            end
+        end
+        if lst[0] == 'bank'
+            if not user.corp == '%NONE'
+
 
 
     on :message, /^.crew (.+)/ do |m, arg|
