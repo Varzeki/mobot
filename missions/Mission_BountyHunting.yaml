@@ -1,0 +1,7 @@
+title: Bounty Hunting
+authors: [ Acbn ]
+attr: STR
+reward: 80
+info:  Hearing reports of a large criminal syndicate, you decide to patrol the outer regions of your current solar system, looking for Big Boss.
+success: Despite his goonies swarming to halt your pursuit of his vessel, you find a way to eliminate ten ships.  You have taken home a ship-full of loot and scrap.
+fail: When Big Boss's men roll up, they assemble and trap you, blowing out one of your engines.  You warp out fast enough to avoid any further damage, but certainly have some repairs to do.

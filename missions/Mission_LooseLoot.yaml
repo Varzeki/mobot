@@ -1,0 +1,7 @@
+title: Loose Loot
+authors: [ Acbn ]
+attr: DEX
+reward: 40
+info:  While mining in the multiverse, you notice another ship has been gone for quite a while, leaving behind a loose canister containing quite a large amount of unrefined ore.
+success: You slyly sweep the canister into your cargo bay and slide into a less reputable trading base in the region, selling the canister for a healthy profit.
+fail: Despite finding a way to scoop up the canister, the original owner returns much sooner than you expected.  He threatens to report you to the local authorities unless you return the canister plus a fee.
