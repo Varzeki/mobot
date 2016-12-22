@@ -9,7 +9,7 @@ config = YAML.load_file("config.yaml")
 
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
-$admins = []
+$admins = ['varzeki']
 $missions = []
 $factions = []
 
@@ -38,7 +38,8 @@ mobot = Cinch::Bot.new do
         db.close
     end
 
-    class faction
+
+    class Faction
         attr_accessor :name, :leader, :bank, :syndicate, :tier1, :tier2, :invited
 
         def initialize(name, leader, bank=0)
@@ -63,7 +64,7 @@ mobot = Cinch::Bot.new do
 
     #Class for each user
     class Member
-        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew, :crew_array, :crew_open
+        attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew, :crew_array, :crew_open, :fact
 
         #On initialization, only takes name by default
         def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1)
@@ -220,7 +221,7 @@ mobot = Cinch::Bot.new do
     end
 
     def get_fact(name)
-        for i in $corporations
+        for i in $factions
             if i.name == name
                 return i
             end
@@ -469,20 +470,20 @@ mobot = Cinch::Bot.new do
 	    end
     end
 
-    on :message, /^.fact (.+)/ do |m, arg|
+    on :message, /^.faction (.+)/ do |m, arg|
         lst = arg.split(' ')
-        user = mobot.get_user(m.user.to_s)
+        user = mobot.get_user(m.user.to_s, $members)
         m.reply lst
         if lst[0] == 'create'
             if user.fact == '%NONE'
                 if lst.length > 1
-                    current = get_fact(lst[1..lst.length])
+                    current = mobot.get_fact(lst[1..lst.length])
                     if current == '%NONE'
                         if user.credits > 14999
                             user.credits = user.credits - 15000
-                            $factions.push(faction.new(lst[1..lst.length].join(' '), m.user.to_s))
-                            user.fact = lst[1..lst,length].join(' ')
-                            get_fact(user.fact).tier1.push(user.name)
+                            $factions.push(Faction.new(lst[1..lst.length].join(' '), m.user.to_s))
+                            user.fact = lst[1..lst.length].join(' ')
+                            mobot.get_fact(user.fact).tier1.push(user.name)
                             mobot.update_db($members)
                             mobot.update_factions($factions)
                             m.reply "You pay the 15000 startup cost and create a new faction!"
@@ -502,12 +503,12 @@ mobot = Cinch::Bot.new do
         if lst[0] == 'join'
             if user.fact == '%NONE'
                 if lst.length > 1
-                    fact = get_fact(lst[1..lst.length].join(' '))
+                    fact = mobot.get_fact(lst[1..lst.length].join(' '))
                     if not fact == '%NONE'
                         if fact.invited.include? m.user.to_s
                             if user.credits > 499
                                 user.credits = user.credits - 500
-                                user.fact = lst[1..lst,length].join(' ')
+                                user.fact = lst[1..lst.length].join(' ')
                                 fact.tier2.push(m.user.to_s)
                                 fact.invited = fact.invited - [user.name]
                                 joined = fact.name
@@ -532,13 +533,13 @@ mobot = Cinch::Bot.new do
         end
         if lst[0] == 'leave'
             if not user.fact == '%NONE'
-                fact = get_fact(user.fact)
+                fact = mobot.get_fact(user.fact)
                 if fact.leader == user.name
                     members = fact.tier1 + fact.tier2
                     members.each do |i|
                         mobot.get_user(i, $members).fact = '%NONE'
                     end
-                    $factions = $factions - fact
+                    $factions.delete(fact)
                     mobot.update_db($members)
                     mobot.update_factions($factions)
                     m.reply "You disband the faction!"
@@ -560,10 +561,10 @@ mobot = Cinch::Bot.new do
         end
         if lst[0] == 'invite'
             if not user.fact == '%NONE'
-                fact = get_fact(user.fact)
+                fact = mobot.get_fact(user.fact)
                 if fact.tier1.include? user.name
                     if lst.length > 1
-                        inv = lst[3]
+                        inv = lst[1]
                         fact.invited.push(inv)
                         mobot.update_factions($factions)
                         m.reply "You just invited #{inv} to the faction!"
@@ -579,14 +580,14 @@ mobot = Cinch::Bot.new do
         end
         if lst[0] == 'bank'
             if not user.fact == '%NONE'
-                fact = get_fact(user.fact)
+                fact = mobot.get_fact(user.fact)
                 if not fact.syndicate
                     if lst.length > 1
-                        if 0 + lst[1] > 1
-                            if lst[1] < user.credits
-                                if not fact.bank + lst[1] > 3000
-                                    fact.bank = fact.bank + lst[1]
-                                    user.credits = user.credits - lst[1]
+                        if 0 + lst[1].to_i > 1
+                            if lst[1].to_i < user.credits
+                                if not fact.bank + lst[1].to_i > 3000
+                                    fact.bank = fact.bank + lst[1].to_i
+                                    user.credits = user.credits - lst[1].to_i
                                     amount = fact.bank
                                     mobot.update_factions($factions)
                                     m.reply "Deposit successful! The faction now has #{amount}!"
@@ -611,7 +612,7 @@ mobot = Cinch::Bot.new do
         end
         if lst[0] == 'show'
             if not user.fact == '%NONE'
-                fact = get_fact(user.fact)
+                fact = mobot.get_fact(user.fact)
                 nm = fact.name
                 bnk = fact.bank
                 if fact.syndicate
