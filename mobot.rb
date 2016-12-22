@@ -11,6 +11,7 @@ config = YAML.load_file("config.yaml")
 $members = []
 $admins = []
 $missions = []
+$factions = []
 
 if !config.key? "admins"
     config["admins"] = config.fetch( "admins", [] )
@@ -31,6 +32,34 @@ mobot = Cinch::Bot.new do
         db.close
     end
 
+    def update_factions(cont)
+        db = File.open('./factions', 'w')
+        db.write(Marshal.dump(cont))
+        db.close
+    end
+
+    class faction
+        attr_accessor :name, :leader, :bank, :syndicate, :tier1, :tier2, :invited
+
+        def initialize(name, leader, bank=0)
+            @name = name
+            @bank = bank
+            @syndicate = false
+            @leader = leader
+            @tier1 = []
+            @tier2 = []
+            @invited = []
+        end
+
+        def daily_reduction
+            @bank = @bank - 350
+            if @bank < 0
+                @syndicate = true
+                return @name
+            end
+        end
+
+    end
 
     #Class for each user
     class Member
@@ -50,6 +79,7 @@ mobot = Cinch::Bot.new do
             @crew = '%NONE'
             @crew_array = []
             @crew_open = false
+            @fact = '%NONE'
         end
 
 
@@ -83,7 +113,6 @@ mobot = Cinch::Bot.new do
         #Helper method to return stats in an array
         def get_stats()
             val = [@dex, @str, @int, @lck]
-            val
         end
 
 
@@ -190,8 +219,18 @@ mobot = Cinch::Bot.new do
         return new
     end
 
+    def get_fact(name)
+        for i in $corporations
+            if i.name == name
+                return i
+            end
+        end
+        return '%NONE'
+    end
+
     begin
         $members = Marshal.load File.read('./database')
+        $factions = Marshal.load File.read('./factions')
     rescue
 	     puts "Failed to load database!"
     end
@@ -372,6 +411,7 @@ mobot = Cinch::Bot.new do
     end
 
     on :message, ".store" do |m|
+        User(m.user.to_s).send('Welcome to the store! You can purchase each of the following using .purchase {item}')
         User(m.user.to_s).send('kick {recipient} - Kicks target user - 1000 credits')
         User(m.user.to_s).send('devoice {recipient} - Devoices target user - 2000 credits')
         User(m.user.to_s).send('DEX - Increases your Dexterity attribute - 500 + 50 for each previous upgrade')
@@ -429,6 +469,168 @@ mobot = Cinch::Bot.new do
 	    end
     end
 
+    on :message, /^.fact (.+)/ do |m, arg|
+        lst = arg.split(' ')
+        user = mobot.get_user(m.user.to_s)
+        m.reply lst
+        if lst[0] == 'create'
+            if user.fact == '%NONE'
+                if lst.length > 1
+                    current = get_fact(lst[1..lst.length])
+                    if current == '%NONE'
+                        if user.credits > 14999
+                            user.credits = user.credits - 15000
+                            $factions.push(faction.new(lst[1..lst.length].join(' '), m.user.to_s))
+                            user.fact = lst[1..lst,length].join(' ')
+                            get_fact(user.fact).tier1.push(user.name)
+                            mobot.update_db($members)
+                            mobot.update_factions($factions)
+                            m.reply "You pay the 15000 startup cost and create a new faction!"
+                        else
+                            m.reply "You need 15000 credits to start a faction!"
+                        end
+                    else
+                        m.reply "That faction already exists!"
+                    end
+                else
+                    m.reply "You need to give your faction a name!"
+                end
+            else
+                m.reply "You're already in a faction!"
+            end
+        end
+        if lst[0] == 'join'
+            if user.fact == '%NONE'
+                if lst.length > 1
+                    fact = get_fact(lst[1..lst.length].join(' '))
+                    if not fact == '%NONE'
+                        if fact.invited.include? m.user.to_s
+                            if user.credits > 499
+                                user.credits = user.credits - 500
+                                user.fact = lst[1..lst,length].join(' ')
+                                fact.tier2.push(m.user.to_s)
+                                fact.invited = fact.invited - [user.name]
+                                joined = fact.name
+                                mobot.update_db($members)
+                                mobot.update_factions($factions)
+                                m.reply "You paid the entry fee of 500 coins and joined #{joined}!"
+                            else
+                                m.reply "You don't have enough credits to pay the 500 credit entry fee!"
+                            end
+                        else
+                            m.reply "You havn't been invited to that faction!"
+                        end
+                    else
+                        m.reply "That faction doesn't exist!"
+                    end
+                else
+                    m.reply "That faction doesn't exist!"
+                end
+            else
+                m.reply "You're already in a faction!"
+            end
+        end
+        if lst[0] == 'leave'
+            if not user.fact == '%NONE'
+                fact = get_fact(user.fact)
+                if fact.leader == user.name
+                    members = fact.tier1 + fact.tier2
+                    members.each do |i|
+                        mobot.get_user(i, $members).fact = '%NONE'
+                    end
+                    $factions = $factions - fact
+                    mobot.update_db($members)
+                    mobot.update_factions($factions)
+                    m.reply "You disband the faction!"
+                else
+                    if fact.tier1.include? user.name
+                        fact.tier1 = fact.tier1 - user.name
+                    end
+                    if fact.tier2.include? user.name
+                        fact.tier2 = fact.tier1 - user.name
+                    end
+                    user.fact = '%NONE'
+                    mobot.update_db($members)
+                    mobot.update_factions($factions)
+                    m.reply "You leave the faction!"
+                end
+            else
+                m.reply "You aren't in a faction!"
+            end
+        end
+        if lst[0] == 'invite'
+            if not user.fact == '%NONE'
+                fact = get_fact(user.fact)
+                if fact.tier1.include? user.name
+                    if lst.length > 1
+                        inv = lst[3]
+                        fact.invited.push(inv)
+                        mobot.update_factions($factions)
+                        m.reply "You just invited #{inv} to the faction!"
+                    else
+                        m.reply "You didn't specify a user!"
+                    end
+                else
+                    m.reply "You don't have permission to do that!"
+                end
+            else
+                m.reply "You aren't in a faction!"
+            end
+        end
+        if lst[0] == 'bank'
+            if not user.fact == '%NONE'
+                fact = get_fact(user.fact)
+                if not fact.syndicate
+                    if lst.length > 1
+                        if 0 + lst[1] > 1
+                            if lst[1] < user.credits
+                                if not fact.bank + lst[1] > 3000
+                                    fact.bank = fact.bank + lst[1]
+                                    user.credits = user.credits - lst[1]
+                                    amount = fact.bank
+                                    mobot.update_factions($factions)
+                                    m.reply "Deposit successful! The faction now has #{amount}!"
+                                else
+                                    m.reply "The bank can't hold that much!"
+                                end
+                            else
+                                m.reply "You don't have that many credits!"
+                            end
+                        else
+                            m.reply "Please bank a valid amount!"
+                        end
+                    else
+                        m.reply "Please bank a valid amount!"
+                    end
+                else
+                    m.reply "Your faction is a syndicate, and can't bank money!"
+                end
+            else
+                m.reply "You aren't in a faction!"
+            end
+        end
+        if lst[0] == 'show'
+            if not user.fact == '%NONE'
+                fact = get_fact(user.fact)
+                nm = fact.name
+                bnk = fact.bank
+                if fact.syndicate
+                    syn = "Syndicate"
+                else
+                    syn = "Corporation"
+                end
+                members = fact.tier1 + fact.tier2
+                lead = fact.leader
+                m.reply "You are in the faction #{nm}, which is lead by #{lead}, has a balance of #{bnk}, and has members #{members}."
+            else
+                m.reply "You aren't in a faction!"
+            end
+        end
+    end
+
+
+
+
     on :message, /^.crew (.+)/ do |m, arg|
         lst = arg.split(' ')
         user = mobot.get_user(m.user.to_s, $members)
@@ -442,6 +644,15 @@ mobot = Cinch::Bot.new do
             else
                 m.reply "You're already in a crew!"
             end
+        end
+        if lst[0] == 'help'
+            m.user.send('Available crew commands:')
+            m.user.send('.crew start')
+            m.user.send('.crew join {leader}')
+            m.user.send('.crew leave')
+            m.user.send('.crew open')
+            m.user.send('.crew close')
+            m.user.send('.crew show')
         end
         if lst[0] == 'join'
             if user.crew == "%NONE"
