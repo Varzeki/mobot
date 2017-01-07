@@ -9,7 +9,7 @@ config = YAML.load_file("config.yaml")
 
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
-$admins = ['varzeki']
+$admins = ['varzeki', 'makotoyuki']
 $missions = []
 $factions = []
 
