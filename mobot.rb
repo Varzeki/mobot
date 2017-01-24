@@ -790,14 +790,18 @@ mobot = Cinch::Bot.new do
     end
 
     on :message, ".migrate" do |m|
-        m.reply "Migrating database..."
-        new_db = []
-        $members.each do |i|
-            new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck))
-        end
-        $members = new_db
-        mobot.update_db($members)
-        m.reply "Done!"
+        if $admins.include? m.user.to_s
+            m.reply "Migrating database..."
+            new_db = []
+            $members.each do |i|
+                new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck))
+            end
+            $members = new_db
+            mobot.update_db($members)
+            m.reply "Done!"
+  	    else
+  	        m.reply "You don't have permission to do that!"
+  	    end
     end
 
     on :message, /^.bet (.+)/ do |m, arg|
