@@ -9,7 +9,7 @@ config = YAML.load_file("config.yaml")
 
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
-$admins = ['varzeki']
+$admins = ['varzeki', 'makotoyuki']
 $missions = []
 $factions = []
 
@@ -264,18 +264,24 @@ mobot = Cinch::Bot.new do
     }
 
     on :message, /^JOIN (#.+)$/ do |m, target|
-        Channel(target).join
+        if $admins.include? m.user.to_s
+            Channel(target).join
+        end
     end
 
     on :message, /^SEND (#.+)/ do |m, args|
-        lst = args.split(' ')
-    	contents = lst[1..lst.length].join(' ')
-    	Channel(lst[0]).send(contents)
+        if $admins.include? m.user.to_s
+            lst = args.split(' ')
+        	contents = lst[1..lst.length].join(' ')
+    	    Channel(lst[0]).send(contents)
+        end
     end
 
     on :message, /^MESSAGE (.+)/ do |m, args|
-        lst = args.split(' ')
-        User(lst[0]).send(lst[1..lst.length].join(' '))
+        if $admins.include? m.user.to_s
+            lst = args.split(' ')
+            User(lst[0]).send(lst[1..lst.length].join(' '))
+        end
     end
 
     on :message, ".daily" do |m|

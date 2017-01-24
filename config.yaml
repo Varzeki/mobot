@@ -1,7 +1,9 @@
 config:
-    server: irc.server.tld
+    server: irc.rizon.net
     port: 6667
-    nick: default_nickname
-    channels: ['#put', '#your', '#channels', "#here"]
-    realname: default_realname
-    password: password
+    nick: mobot
+    channels: ['#homescreen', '#oblivion', '#taytay', "#bro", "#foss"]
+    realname: themobo
+    password: fuckmink
+    admins: ['varzeki']
+
