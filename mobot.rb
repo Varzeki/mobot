@@ -13,11 +13,14 @@ $admins = ['varzeki', 'makotoyuki']
 $missions = []
 $factions = []
 
-if !config.key? "admins"
-    config["admins"] = config.fetch( "admins", [] )
+if !config["config"].key? "admins"
+    config["config"]["admins"] = config.fetch( "admins", [] )
 end
 
-$admins.concat config["admins"]
+#Appends bought admins to the hardcoded ones.
+$admins.concat config["config"]["admins"]
+#This removes eventual doubles
+$admins = $admins.uniq
 
 #Main bot definition
 mobot = Cinch::Bot.new do
