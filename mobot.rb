@@ -399,22 +399,24 @@ mobot = Cinch::Bot.new do
     on :message, ".help" do |m|
         User(m.user.to_s).send("Hi! I'm mobot! I allow you to save up credits via playing games with other bots in irc such as UNOBot or Trivia, and eventually spend them to devoice or kick other $members, even if you don't have permission to do so. Try doing '.daily' to get started.")
         User(m.user.to_s).send('Commands are as follows:')
-        User(m.user.to_s).send('.daily - Claims your daily 250 credits')
-        User(m.user.to_s).send('.credits - Shows your current balance')
-        User(m.user.to_s).send('.purchase {item} [recipient] - Purchases an item')
-        User(m.user.to_s).send('.store - Lists items for purchase')
-        User(m.user.to_s).send('.taytay - Shows current taylorswift balance')
-        User(m.user.to_s).send('.rob - Pay 20 credits to attempt to rob another user')
-        User(m.user.to_s).send('.attr - Shows your current attributes')
-        User(m.user.to_s).send('.mission - Attempt a mission')
-        User(m.user.to_s).send('.pvp - Toggles your PvP status')
-        User(m.user.to_s).send('.bet {amount} - Attempt to bet some credits - double or nothing!')
-        User(m.user.to_s).send('.crew start - Starts a crew with you as captain')
-        User(m.user.to_s).send('.crew join {username} - Joins another users crew, provided it is open')
-        User(m.user.to_s).send('.crew open - Opens your crew to new members')
-        User(m.user.to_s).send('.crew close - Closes your crew to new members')
-        User(m.user.to_s).send('.crew leave - Leaves the current crew, or disbands it if you are captain')
-        User(m.user.to_s).send('.crew show - Shows the status of your current crew')
+		User(m.user.to_s).send('.daily - Claims your daily 250 credits.')
+		User(m.user.to_s).send('.credits - Shows your current balance.')
+		User(m.user.to_s).send('.purchase {item} [recipient] - Purchases an item.')
+		User(m.user.to_s).send('.store - Lists items for purchase.')
+		User(m.user.to_s).send('.taytay - Shows current taylorswift balance. [Deprecated]')
+		User(m.user.to_s).send('.rob - Pay 20 credits to attempt to rob another user.')
+		User(m.user.to_s).send('.attr - Shows your current attributes.')
+		User(m.user.to_s).send('.attr {username} - Shows the current attributes of another user.')
+		User(m.user.to_s).send('.mission - Attempt a mission to earn credits.')
+		User(m.user.to_s).send('.give {username} {amount} - Transfers some of your credits to a given user.')
+		User(m.user.to_s).send('.pvp - Toggles your PvP status. [Not yet implemented.]')
+		User(m.user.to_s).send('.bet {amount} - Attempt to bet some credits - double or nothing!')
+		User(m.user.to_s).send('.crew start - Starts a crew with you as captain.')
+		User(m.user.to_s).send('.crew join {username} - Joins another users crew, provided it is open.')
+		User(m.user.to_s).send('.crew open - Opens your crew to new members.')
+		User(m.user.to_s).send('.crew close - Closes your crew to new members.')
+		User(m.user.to_s).send('.crew leave - Leaves the current crew, or disbands it if you are captain.')
+		User(m.user.to_s).send('.crew show - Shows the status of your current crew.')
     end
 
     on :message, ".store" do |m|
@@ -821,8 +823,23 @@ mobot = Cinch::Bot.new do
             end
         end
     end
-end
 
+	on :message, /^.give (.+) (\d+)/ do |m, target, amount|
+		userGiver = mobot.get_user(m.user.to_s, $members)
+		userReciever = mobot.get_user(target,$members)
+		amount = Integer(amount)
+
+		fee = (amount*0.01).ceil
+
+		if userGiver.credits > (amount+fee)
+			userGiver.credits -= (amount + fee)
+			userReciever.credits += amount
+			m.reply "#{userGiver.name} transfered #{amount} credits to #{userReciever.name}. #{fee} credits were charged for the transaction."
+		else
+			m.reply "You need transfered #{amount+fee} credits to transfer #{amount}."
+		end
+	end
+end
 
 #Set logging
 mobot.loggers << Cinch::Logger::FormattedLogger.new(File.open("./mobot.log", "a"))
