@@ -417,6 +417,12 @@ mobot = Cinch::Bot.new do
 		User(m.user.to_s).send('.crew close - Closes your crew to new members.')
 		User(m.user.to_s).send('.crew leave - Leaves the current crew, or disbands it if you are captain.')
 		User(m.user.to_s).send('.crew show - Shows the status of your current crew.')
+		User(m.user.to_s).send('.faction create {factionname} - Starts a new faction for a fee over 15000 credits.')
+		User(m.user.to_s).send('.faction show - Displays the stats of your faction.')
+		User(m.user.to_s).send('.faction join {factionname} - Joins a faction for a fee over 500 credits, provided you have been invited.')
+		User(m.user.to_s).send('.faction invite {username} - Invites a user to your faction.')
+		User(m.user.to_s).send('.faction leave - Leaves your current faction.')
+		User(m.user.to_s).send('.faction bank {amount} - Transfer credits to your factions bank, provided it is a corporation.')
     end
 
     on :message, ".store" do |m|
@@ -494,7 +500,7 @@ mobot = Cinch::Bot.new do
                             mobot.get_fact(user.fact).tier1.push(user.name)
                             mobot.update_db($members)
                             mobot.update_factions($factions)
-                            m.reply "You pay the 15000 startup cost and create a new faction!"
+                            m.reply "You paid the 15000 credits and created a new faction!"
                         else
                             m.reply "You need 15000 credits to start a faction!"
                         end
