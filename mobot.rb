@@ -821,6 +821,7 @@ mobot = Cinch::Bot.new do
                     m.reply "You lost! You now have #{amount} credits!"
                 end
             end
+			mobot.update_db($members)
         end
     end
 
@@ -835,6 +836,7 @@ mobot = Cinch::Bot.new do
 			userGiver.credits -= (amount + fee)
 			userReciever.credits += amount
 			m.reply "#{userGiver.name} transfered #{amount} credits to #{userReciever.name}. #{fee} credits were charged for the transaction."
+			mobot.update_db($members)
 		else
 			m.reply "You need transfered #{amount+fee} credits to transfer #{amount}."
 		end
