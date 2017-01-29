@@ -829,16 +829,16 @@ mobot = Cinch::Bot.new do
 		userGiver = mobot.get_user(m.user.to_s, $members)
 		userReciever = mobot.get_user(target,$members)
 		amount = Integer(amount)
-
 		fee = (amount*0.01).ceil
+        combined = amount + fee
 
-		if userGiver.credits >= (amount+fee)
-			userGiver.credits -= (amount + fee)
+		if userGiver.credits >= combined
+			userGiver.credits -= combined
 			userReciever.credits += amount
-			m.reply "#{userGiver.name} transfered #{amount} credits to #{userReciever.name}. #{fee} credits were charged for the transaction."
+			m.reply "#{userGiver.name} transfered #{amount} #{amount != 1 ? "credits" : "credit"} to #{userReciever.name}. #{fee} #{fee != 1 ? "credits were " : "credit was"} charged for the transaction."
 			mobot.update_db($members)
 		else
-			m.reply "You need #{amount+fee} credits to transfer #{amount} to #{userReciever.name}."
+			m.reply "You need #{combined} credits to transfer #{amount} to #{userReciever.name}."
 		end
 	end
 end
