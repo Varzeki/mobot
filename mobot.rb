@@ -825,14 +825,14 @@ mobot = Cinch::Bot.new do
         end
     end
 
-	on :message, /^.give (.+) (\d+)/ do |m, target, amount|
+	on :message, /^.give (\S+) (\d+)/ do |m, target, amount|
 		userGiver = mobot.get_user(m.user.to_s, $members)
 		userReciever = mobot.get_user(target,$members)
 		amount = Integer(amount)
 
 		fee = (amount*0.01).ceil
 
-		if userGiver.credits > (amount+fee)
+		if userGiver.credits >= (amount+fee)
 			userGiver.credits -= (amount + fee)
 			userReciever.credits += amount
 			m.reply "#{userGiver.name} transfered #{amount} credits to #{userReciever.name}. #{fee} credits were charged for the transaction."
