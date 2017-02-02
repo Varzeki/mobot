@@ -67,7 +67,7 @@ mobot = Cinch::Bot.new do
         attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew, :crew_array, :crew_open, :fact
 
         #On initialization, only takes name by default
-        def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1)
+        def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1, crew = '%NONE', crew_array = [], crew_open = false)
             @name = name
             @credits = credits
             @daily = false
@@ -77,9 +77,9 @@ mobot = Cinch::Bot.new do
             @lck = lck
             @pvp = false
             @mission = false
-            @crew = '%NONE'
-            @crew_array = []
-            @crew_open = false
+            @crew = crew
+            @crew_array = crew_array
+            @crew_open = crew_open
             @fact = '%NONE'
         end
 
@@ -796,7 +796,7 @@ mobot = Cinch::Bot.new do
             m.reply "Migrating database..."
             new_db = []
             $members.each do |i|
-                new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck))
+                new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck, i.crew, i.crew_array, i.crew_open))
             end
             $members = new_db
             mobot.update_db($members)
