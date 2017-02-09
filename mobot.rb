@@ -148,8 +148,9 @@ mobot = Cinch::Bot.new do
 	        if item == "kick"
                 if @credits > 999
     	    	    @credits = @credits - 1000
-    	    	    if recepient == config["config"]["nick"]
-	                recepient = @name
+    	    	    if recipient == config["config"]["nick"]
+	                recipient = @name
+		    end
     	    	    m.channel.kick(recipient)
     	    	    val = "User kicked!"
     	    	else
