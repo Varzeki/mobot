@@ -29,7 +29,7 @@ These features currently include:
 * .attr - Shows the current users attributes
 * .mission - Attempts a mission
 * .pvp - Toggles the users PvP status
-* .bet {amount} - Bets an amount of coins, with a 40% chance to double your offer
+* .bet {amount} - Bets an amount of coins, with a 48% chance to double your offer
 * .crew {option} [user] - Operates crews, with commands as:
   * start - Starts a crew
   * join {username} - Joins another persons crew
