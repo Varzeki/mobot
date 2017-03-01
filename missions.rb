@@ -28,7 +28,7 @@ class Mission
                 responses.push(@reward + ((stats[0] * 7) + (stats[3] * 2)))
             else
                 responses.push(@failure)
-                responses.push(0 - ((@reward).round - stats[3]))
+                responses.push(0 - @reward)
             end
         end
         if @type == "STR"
@@ -37,7 +37,7 @@ class Mission
                 responses.push(@reward + ((stats[1] * 7) + (stats[3] * 2)))
             else
                 responses.push(@failure)
-                responses.push(0 - ((@reward).round - stats[3]))
+                responses.push(0 - @reward)
             end
         end
         if @type == "INT"
@@ -46,7 +46,7 @@ class Mission
                 responses.push(@reward + ((stats[2] * 7) + (stats[3] * 2)))
             else
                 responses.push(@failure)
-                responses.push(0 - ((@reward).round - stats[3]))
+                responses.push(0 - @reward)
             end
         end
         if @type == "LCK"
@@ -55,7 +55,7 @@ class Mission
                 responses.push(@reward + (stats[3] * 9))
             else
                 responses.push(@failure)
-                responses.push(0 - ((@reward).round - stats[3]))
+                responses.push(0 - @reward
             end
         end
         responses
