@@ -177,6 +177,7 @@ mobot = Cinch::Bot.new do
                 @inventory.delete_at(slot)
                 val.push "You equip your #{item[0]}!"
             end
+            val
         end
 
         #Helper method to return stats in an array
@@ -524,7 +525,7 @@ mobot = Cinch::Bot.new do
 
     on :message, "inventory" do |m|
         if m.channel == '#mobot'
-            m.reply m.user.to_s + ": " + mobot.get_user(m.user.to_s, $members).show_inventory
+            m.reply m.user.to_s + ": " + mobot.get_user(m.user.to_s, $members).show_inventory.to_s
         else
             m.reply(m.user.to_s + ": " + "Commands only work in #mobot!")
         end
@@ -534,7 +535,10 @@ mobot = Cinch::Bot.new do
         if m.channel == '#mobot'
         	lst = m.message.split(' ')
         	if lst.length > 1
-        	    m.reply m.user.to_s + ": " + mobot.get_user(lst[1], $members).equip(lst[1])
+                responses = mobot.get_user(lst[1], $members).equip
+                responses.each do |i|
+                    m.reply m.user.to_s + ": " + i.to_s
+                end
             else
                 m.reply m.user.to_s + ": " + "You must specify an inventory slot!"
             end
