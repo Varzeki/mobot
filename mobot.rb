@@ -191,7 +191,6 @@ mobot = Cinch::Bot.new do
                 val.push round(@lck + (@item[1][3]*@lck))
                 val.push round(@psi + (@item[1][4]*@psi))
                 val.push round(@acc + (@item[1][5]*@acc))
-                end
             else
                 val = [@dex, @str, @int, @lck, @psi, @acc]
             end
