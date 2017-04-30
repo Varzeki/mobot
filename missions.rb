@@ -25,7 +25,7 @@ class Mission
         if @type == "DEX"
             if rand() > 0.3
                 responses.push(@success)
-                responses.push(@reward + ((stats[0] * 7) + (stats[3] * 2)))
+                responses.push(@reward + (stats[0] * 7)
             else
                 responses.push(@failure)
                 responses.push(0 - @reward)
@@ -52,7 +52,25 @@ class Mission
         if @type == "LCK"
             if rand() > 0.3
                 responses.push(@success)
-                responses.push(@reward + (stats[3] * 9))
+                responses.push(@reward + stats[3] * 7)
+            else
+                responses.push(@failure)
+                responses.push(0 - @reward)
+            end
+        end
+        if @type == "PSI"
+            if rand() > 0.3
+                responses.push(@success)
+                responses.push(@reward + stats[4] * 7)
+            else
+                responses.push(@failure)
+                responses.push(0 - @reward
+            end
+        end
+        if @type == "ACC"
+            if rand() > 0.3
+                responses.push(@success)
+                responses.push(@reward + stats[5] * 7)
             else
                 responses.push(@failure)
                 responses.push(0 - @reward

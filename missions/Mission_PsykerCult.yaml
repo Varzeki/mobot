@@ -1,0 +1,7 @@
+title: Investigate a cult
+authors: [ Varzeki ]
+attr: PSI
+reward: 65
+info: You are tasked with investigating a nearby cult of Psykers
+success: When you arrive, you are greeted by a friendly Sage who explains the cult is benevolent and offers you some supplies for your journey
+fail: When you arrive, your ships electronics begin malfunctioning as the mindrending buzz of dark psi floods your ship. You quickly turn tail and escape.
