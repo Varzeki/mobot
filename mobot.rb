@@ -401,9 +401,9 @@ mobot = Cinch::Bot.new do
         if m.channel == '#mobot'
         	lst = m.message.split(' ')
         	if lst.length > 1
-        	    m.reply m.user.to_s + ": " + mobot.get_user(lst[1], $members).credits
+        	    m.reply m.user.to_s + ": " + mobot.get_user(lst[1], $members).credits.to_s
             else
-                m.reply m.user.to_s + ": " + mobot.get_user(m.user.to_s, $members).credits
+                m.reply m.user.to_s + ": " + mobot.get_user(m.user.to_s, $members).credits.to_s
             end
         else
             m.reply(m.user.to_s + ": " + "Commands only work in #mobot!")
@@ -471,7 +471,7 @@ mobot = Cinch::Bot.new do
                     else
                         m.reply m.user.to_s + ": " + "That mission gained your crew #{reward} credits each!"
                         if rand() > 0.7
-                            newitem = create_item()
+                            newitem = mobot.create_item()
                             user.inventory.push newitem
                             m.reply m.user.to_s + ": " + "You find a #{newitem[0]}!"
                         end
@@ -498,7 +498,7 @@ mobot = Cinch::Bot.new do
                         else
                             m.reply m.user.to_s + ": " + "That mission gained you #{reward} credits! You now have #{current} credits!"
                             if rand() > 0.7
-                                newitem = create_item()
+                                newitem = mobot.create_item()
                                 user.inventory.push newitem
                                 m.reply m.user.to_s + ": " + "You find a #{newitem[0]}!"
                             end
