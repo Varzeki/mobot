@@ -356,7 +356,7 @@ mobot = Cinch::Bot.new do
 
     $missions.concat(loadMissions())
 
-    Kernel.loop {
+    while true
         $members.each do |i|
             if not i.ap >= 16
                 i.ap = i.ap + 1
@@ -364,7 +364,7 @@ mobot = Cinch::Bot.new do
         end
         Channel('#mobot').send 'User Action Points have been updated!'
         sleep(3600)
-    }
+    end
 
     on :message, /^JOIN (#.+)$/ do |m, target|
         if $admins.include? m.user.to_s
