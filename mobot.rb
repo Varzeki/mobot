@@ -183,8 +183,15 @@ mobot = Cinch::Bot.new do
         end
 
         def get_modded_stats()
-            if item != "%NONE"
-                val = [round(@dex + (@item[1][0]*@dex)), round(@str + (@item[1][1]*@str)), round(@int + (@item[1][2]*@int)), round(@lck + (@item[1][3]*@lck)), round(@psi + (@item[1][4]*@psi)), round(@acc + (@item[1][5]*@acc))]
+            if item != ["%NONE"]
+                val = []
+                val.push round(@dex + (@item[1][0]*@dex))
+                val.push round(@str + (@item[1][1]*@str))
+                val.push round(@int + (@item[1][2]*@int))
+                val.push round(@lck + (@item[1][3]*@lck))
+                val.push round(@psi + (@item[1][4]*@psi))
+                val.push round(@acc + (@item[1][5]*@acc))
+                end
             else
                 val = [@dex, @str, @int, @lck, @psi, @acc]
             end
