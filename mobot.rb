@@ -510,7 +510,7 @@ mobot = Cinch::Bot.new do
                     user.mission = false
                 end
             else
-                m.reply m.user.to_s + ": " + "You already went on a mission recently! Take a break for a minute or three."
+                m.reply m.user.to_s + ": " + "You don't have enough AP to do that!"
             end
         else
             m.reply(m.user.to_s + ": " + "Commands only work in #mobot!")
