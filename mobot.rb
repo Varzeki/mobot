@@ -113,7 +113,7 @@ mobot = Cinch::Bot.new do
         attr_accessor :name, :credits, :dex, :str, :int, :lck, :pvp, :mission, :daily, :crew, :crew_array, :crew_open, :fact, :access, :inventory, :item, :ap
 
         #On initialization, only takes name by default
-        def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1, crew = '%NONE', crew_array = [], crew_open = false, access = 0, inventory = ["%NONE"], item = ["%NONE"], ap = 5)
+        def initialize(name, credits = 0, dex = 1, str = 1, int = 1, lck = 1, crew = '%NONE', crew_array = [], crew_open = false, access = 0, inventory = ["%NONE"], item = ["%NONE"], ap = 5, psi = 1, acc = 1)
             @name = name
             @credits = credits
             @daily = false
@@ -131,6 +131,8 @@ mobot = Cinch::Bot.new do
             @inventory = inventory
             @item = item
             @ap = ap
+            @psi = psi
+            @acc = acc
         end
 
         #Helper methods - allows easy management of currency
@@ -894,7 +896,7 @@ mobot = Cinch::Bot.new do
             m.reply m.user.to_s + ": " + "Migrating database..."
             new_db = []
             $members.each do |i|
-                new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck, i.crew, i.crew_array, i.crew_open, i.access, i.inventory, i.item))
+                new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck, i.crew, i.crew_array, i.crew_open, i.access, i.inventory, i.item, i.ap, i.psi, i.acc))
             end
             $members = new_db
             mobot.update_db($members)
