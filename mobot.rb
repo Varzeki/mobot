@@ -535,7 +535,7 @@ mobot = Cinch::Bot.new do
         if m.channel == '#mobot'
         	lst = m.message.split(' ')
         	if lst.length > 1
-                responses = mobot.get_user(lst[1], $members).equip
+                responses = mobot.get_user(m.user.to_s, $members).equip(lst[1])
                 responses.each do |i|
                     m.reply m.user.to_s + ": " + i.to_s
                 end
