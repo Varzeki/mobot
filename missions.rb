@@ -64,7 +64,7 @@ class Mission
                 responses.push(@reward + stats[4] * 7)
             else
                 responses.push(@failure)
-                responses.push(0 - @reward
+                responses.push(0 - @reward)
             end
         end
         if @type == "ACC"
@@ -73,7 +73,7 @@ class Mission
                 responses.push(@reward + stats[5] * 7)
             else
                 responses.push(@failure)
-                responses.push(0 - @reward
+                responses.push(0 - @reward)
             end
         end
         responses
