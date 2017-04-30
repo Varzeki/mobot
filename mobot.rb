@@ -522,6 +522,27 @@ mobot = Cinch::Bot.new do
         User(m.user.to_s).send('Commands and documentation can be found at https://github.com/Varzeki/mobot')
     end
 
+    on :message, "inventory" do |m|
+        if m.channel == '#mobot'
+            m.reply m.user.to_s + ": " + mobot.get_user(m.user.to_s, $members).show_inventory
+        else
+            m.reply(m.user.to_s + ": " + "Commands only work in #mobot!")
+        end
+    end
+
+    on :message, /^equip/ do |m|
+        if m.channel == '#mobot'
+        	lst = m.message.split(' ')
+        	if lst.length > 1
+        	    m.reply m.user.to_s + ": " + mobot.get_user(lst[1], $members).equip(lst[1])
+            else
+                m.reply m.user.to_s + ": " + "You must specify an inventory slot!"
+            end
+        else
+            m.reply(m.user.to_s + ": " + "Commands only work in #mobot!")
+        end
+    end
+
     on :message do |m|
         if m.user.to_s == "Trivia"
             lst = m.message.split(' ')
