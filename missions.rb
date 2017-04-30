@@ -25,7 +25,7 @@ class Mission
         if @type == "DEX"
             if rand() > 0.3
                 responses.push(@success)
-                responses.push(@reward + (stats[0] * 7)
+                responses.push(@reward + (stats[0] * 7))
             else
                 responses.push(@failure)
                 responses.push(0 - @reward)
