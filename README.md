@@ -1,16 +1,16 @@
 # Mobot
 For when you're in love with the mobo.
 
-##Dependencies
+## Dependencies
 
 ```
 gem install cinch cinch-identify yaml
 ```
 
-##Introduction
+## Introduction
 Mobot is an IRC bot written in Ruby, with the help of the cinch library. It allows users to gain currency through the user of other bots, and ultimately spend it to use administration commands they don't have privileges for.
 
-##Usage, Maths, and Strategies
+## Usage, Maths, and Strategies
 For convenience, here is a list of all valid mobot commands:
 * pvp
 * mission
@@ -69,7 +69,7 @@ Kicks and bans are disabled for everyone but mobot, though if your access level 
 
 Action Points are awarded to all users hourly, and can be spent to attempt a mission, or rob. Action Points stack up to 16, at which point they will stop being automatically awarded.
 
-##Channel Rules
+## Channel Rules
 * Do not break any Rizon global Rules
 * Do not exercise the use of exploits to abuse mobot
 * Botting is allowed, but only one bot per person unless otherwise discussed
@@ -78,7 +78,7 @@ Action Points are awarded to all users hourly, and can be spent to attempt a mis
 * Do not mass invite or mass hilight
 * Do not not abuse mink
 
-##Contribute
+## Contribute
 Feature requests and bug reports welcome, along with pull requests - feel free to participate!
 
 You can submit a VALID and UNDISCUSSED issue into the tracker
@@ -90,7 +90,7 @@ You can do anything else you can think of, or don't, i'm not your boss, don't be
 
 Any of the above contributions will be rewarded with ACCESS levels
 
-##To Do
+## To Do
 * Change kick system to respect access
 * Automate access syncing
 * Add PvP system - party battlegrounds? Bot integration based objectives? Rob objectives? fun interactive PvP rather than RNG style PvE
