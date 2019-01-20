@@ -1,6 +1,3 @@
-
 database
-
-*.log
-
-config\.yaml
+factions
+mobot.log

@@ -1,0 +1,8 @@
+config:
+    server: irc.rizon.net
+    port: 6667
+    nick: mobot
+    channels: ['#mobot']
+    realname: themobo
+    password: password
+    admins: ['varzeki']

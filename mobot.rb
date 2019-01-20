@@ -1,5 +1,5 @@
 require 'cinch'
-require 'cinch/plugins/identify'
+# require 'cinch/plugins/identify'
 require 'yaml'
 
 require_relative 'missions'
@@ -355,12 +355,12 @@ mobot = Cinch::Bot.new do
         c.port = config['config']['port'].to_s
         c.nick = config['config']['nick'].to_s
         c.channels = config['config']['channels']
-        c.delay_joins = :identified
-        c.plugins.plugins = [Cinch::Plugins::Identify]
-        c.plugins.options[Cinch::Plugins::Identify] = {
-            :password => config['config']['password'],
-            :type => :nickserv,
-        }
+        # c.delay_joins = :identified
+        # c.plugins.plugins = [Cinch::Plugins::Identify]
+        # c.plugins.options[Cinch::Plugins::Identify] = {
+        #     :password => config['config']['password'],
+        #     :type => :nickserv,
+        # }
     end
 
     $missions.concat(loadMissions())
