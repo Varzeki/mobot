@@ -392,7 +392,7 @@ mobot = Cinch::Bot.new do
 
     on :message,  /^credits/ do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -406,7 +406,7 @@ mobot = Cinch::Bot.new do
 
     on :message,  /^attr/ do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -422,7 +422,7 @@ mobot = Cinch::Bot.new do
 
     on :message, 'pvp' do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -431,7 +431,7 @@ mobot = Cinch::Bot.new do
 
     on :message, 'mission' do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -518,7 +518,7 @@ mobot = Cinch::Bot.new do
                 user.mission = false
             end
         else
-            m.reply m.user.to_s + ': ' + 'You don\'t have enough AP to do that!'
+            m.reply m.user.to_s + ': You don\'t have enough AP to do that!'
         end
     end
 
@@ -529,7 +529,7 @@ mobot = Cinch::Bot.new do
 
     on :message, 'inventory' do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -538,7 +538,7 @@ mobot = Cinch::Bot.new do
 
     on :message, 'item' do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -547,7 +547,7 @@ mobot = Cinch::Bot.new do
 
     on :message, /^equip/ do |m|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -558,7 +558,7 @@ mobot = Cinch::Bot.new do
                 m.reply m.user.to_s + ': ' + i.to_s
             end
         else
-            m.reply m.user.to_s + ': ' + 'You must specify an inventory slot!'
+            m.reply m.user.to_s + ': You must specify an inventory slot!'
         end
     end
 
@@ -589,10 +589,10 @@ mobot = Cinch::Bot.new do
         if $admins.include? m.user.to_s
             user = mobot.get_user(recipient, $members)
             user.credits = user.credits + amount.to_i
-            m.reply m.user.to_s + ': ' + 'User credited!'
+            m.reply m.user.to_s + ': User credited!'
             mobot.update_db($members)
         else
-            m.reply m.user.to_s + ': ' + 'You don\'t have permission to do that!'
+            m.reply m.user.to_s + ': You don\'t have permission to do that!'
         end
     end
 
@@ -615,7 +615,7 @@ mobot = Cinch::Bot.new do
     #FIXME
     on :message, /^faction (.+)/ do |m, arg|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -634,18 +634,18 @@ mobot = Cinch::Bot.new do
                             mobot.get_fact(user.fact).tier1.push(user.name)
                             mobot.update_db($members)
                             mobot.update_factions($factions)
-                            m.reply m.user.to_s + ': ' + 'You pay the 15000 startup cost and create a new faction!'
+                            m.reply m.user.to_s + ': You pay the 15000 startup cost and create a new faction!'
                         else
-                            m.reply m.user.to_s + ': ' + 'You need 15000 credits to start a faction!'
+                            m.reply m.user.to_s + ': You need 15000 credits to start a faction!'
                         end
                     else
-                        m.reply m.user.to_s + ': ' + 'That faction already exists!'
+                        m.reply m.user.to_s + ': That faction already exists!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'You need to give your faction a name!'
+                    m.reply m.user.to_s + ': You need to give your faction a name!'
                 end
             else
-                m.reply m.user.to_s + ': ' + 'You\'re already in a faction!'
+                m.reply m.user.to_s + ': You\'re already in a faction!'
             end
         end
         if lst[0] == 'join'
@@ -690,7 +690,7 @@ mobot = Cinch::Bot.new do
                     $factions.delete(fact)
                     mobot.update_db($members)
                     mobot.update_factions($factions)
-                    m.reply m.user.to_s + ': ' + 'You disband the faction!'
+                    m.reply m.user.to_s + ': You disband the faction!'
                 else
                     if fact.tier1.include? user.name
                         fact.tier1 = fact.tier1 - user.name
@@ -701,10 +701,10 @@ mobot = Cinch::Bot.new do
                     user.fact = '%NONE'
                     mobot.update_db($members)
                     mobot.update_factions($factions)
-                    m.reply m.user.to_s + ': ' + 'You leave the faction!'
+                    m.reply m.user.to_s + ': You leave the faction!'
                 end
             else
-                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                m.reply m.user.to_s + ': You aren\'t in a faction!'
             end
         end
         if lst[0] == 'invite'
@@ -772,14 +772,14 @@ mobot = Cinch::Bot.new do
                 lead = fact.leader
                 m.reply m.user.to_s + ": You are in the faction #{nm}, which is lead by #{lead}, has a balance of #{bnk}, and has members #{members}."
             else
-                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                m.reply m.user.to_s + ': You aren\'t in a faction!'
             end
         end
     end
 
     on :message, /^crew (.+)/ do |m, arg|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -791,20 +791,20 @@ mobot = Cinch::Bot.new do
                 user.crew_array = [user.name]
                 user.crew_open = false
                 mobot.update_db($members)
-                m.reply m.user.to_s + ': ' + 'You started a crew!'
+                m.reply m.user.to_s + ': You started a crew!'
             else
-                m.reply m.user.to_s + ': ' + 'You\'re already in a crew!'
+                m.reply m.user.to_s + ': You\'re already in a crew!'
             end
         end
         if lst[0] == 'join'
             if user.crew == '%NONE'
                 user2 = mobot.get_user(lst[1], $members)
                 if not user2.crew == user2.name
-                    m.reply m.user.to_s + ': ' + 'That user isn\'t a crew captain!'
+                    m.reply m.user.to_s + ': That user isn\'t a crew captain!'
                 else
                     if user2.crew_open == true
                         if user2.crew_array.length > 2
-                            m.reply m.user.to_s + ': ' + 'That users crew is full!'
+                            m.reply m.user.to_s + ': That users crew is full!'
                         else
                             user2.crew_array.push(user.name)
                             user.crew = user2.name
@@ -813,27 +813,27 @@ mobot = Cinch::Bot.new do
                             m.reply m.user.to_s + ": You just joined the crew of #{cname}!"
                         end
                     else
-                        m.reply m.user.to_s + ': ' + 'That users crew is closed!'
+                        m.reply m.user.to_s + ': That users crew is closed!'
                     end
                 end
             else
-                m.reply m.user.to_s + ': ' + 'You\'re already in a crew!'
+                m.reply m.user.to_s + ': You\'re already in a crew!'
             end
         end
         if lst[0] == 'open'
             if user.crew == user.name
                 if not user.crew_open
                     user.crew_open = true
-                    m.reply m.user.to_s + ': ' + 'Your crew is now open!'
+                    m.reply m.user.to_s + ': Your crew is now open!'
                     mobot.update_db($members)
                 else
-                    m.reply m.user.to_s + ': ' + 'Your crew is already open!'
+                    m.reply m.user.to_s + ': Your crew is already open!'
                 end
             else
                 if user.crew == '%NONE'
-                    m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
+                    m.reply m.user.to_s + ': You aren\'t in a crew!'
                 else
-                    m.reply m.user.to_s + ': ' + 'You aren\'t the captain of this crew!'
+                    m.reply m.user.to_s + ': You aren\'t the captain of this crew!'
                 end
             end
         end
@@ -842,15 +842,15 @@ mobot = Cinch::Bot.new do
                 if user.crew_open
                     user.crew_open = false
                     mobot.update_db($members)
-                    m.reply m.user.to_s + ': ' + 'Your crew is now closed!'
+                    m.reply m.user.to_s + ': Your crew is now closed!'
                 else
-                    m.reply m.user.to_s + ': ' + 'Your crew is already closed!'
+                    m.reply m.user.to_s + ': Your crew is already closed!'
                 end
             else
                 if user.crew == '%NONE'
-                    m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
+                    m.reply m.user.to_s + ': You aren\'t in a crew!'
                 else
-                    m.reply m.user.to_s + ': ' + 'You aren\'t the captain of this crew!'
+                    m.reply m.user.to_s + ': You aren\'t the captain of this crew!'
                 end
             end
         end
@@ -862,18 +862,18 @@ mobot = Cinch::Bot.new do
                 end
                 user.crew_array = []
                 mobot.update_db($members)
-                m.reply m.user.to_s + ': ' + 'You disband the crew!'
+                m.reply m.user.to_s + ': You disband the crew!'
             else
                 user2 = mobot.get_user(user.crew, $members)
                 user2.crew_array = user2.crew_array - [user.name]
                 user.crew = '%NONE'
                 mobot.update_db($members)
-                m.reply m.user.to_s + ': ' + 'You leave the crew!'
+                m.reply m.user.to_s + ': You leave the crew!'
             end
         end
         if lst[0] == 'show'
             if user.crew == '%NONE'
-                m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
+                m.reply m.user.to_s + ': You aren\'t in a crew!'
             else
                 open = mobot.get_user(user.crew, $members).crew_open
                 if open
@@ -890,7 +890,7 @@ mobot = Cinch::Bot.new do
 
     on :message, /^rob (.+)/ do |m, arg|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -918,7 +918,7 @@ mobot = Cinch::Bot.new do
 
     on :message, /^purchase (.+)/ do |m, arg|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -935,22 +935,22 @@ mobot = Cinch::Bot.new do
 
     on :message, 'MIGRATE' do |m|
         if $admins.include? m.user.to_s
-            m.reply m.user.to_s + ': ' + 'Migrating database...'
+            m.reply m.user.to_s + ': Migrating database...'
             new_db = []
             $members.each do |i|
                 new_db.push(Member.new(i.name, i.credits, i.dex, i.str, i.int, i.lck, i.crew, i.crew_array, i.crew_open, i.access, i.inventory, i.item, i.ap, i.psi, i.acc))
             end
             $members = new_db
             mobot.update_db($members)
-            m.reply m.user.to_s + ': ' + 'Done!'
+            m.reply m.user.to_s + ': Done!'
         else
-            m.reply m.user.to_s + ': ' + 'You don\'t have permission to do that!'
+            m.reply m.user.to_s + ': You don\'t have permission to do that!'
         end
     end
 
     on :message, /^bet (.+)/ do |m, arg|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
@@ -974,7 +974,7 @@ mobot = Cinch::Bot.new do
 
     on :message, /^give (\S+) (\d+)/ do |m, target, amount|
         if force_mobot_channel == true && m.channel != '#mobot'
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply(m.user.to_s + ': Commands only work in #mobot!')
             next
         end
 
