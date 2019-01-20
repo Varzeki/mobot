@@ -4,7 +4,7 @@ For when you're in love with the mobo.
 ## Dependencies
 
 ```
-gem install cinch cinch-identify yaml
+gem install cinch
 ```
 
 ## Introduction
