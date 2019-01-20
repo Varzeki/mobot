@@ -82,7 +82,7 @@ mobot = Cinch::Bot.new do
             stats[5] += 0.2
         end
 
-        name = '#{prefix} #{weapon} of #{element}'
+        name = "#{prefix} #{weapon} of #{element}"
         [name, stats, value]
     end
 
@@ -172,11 +172,11 @@ mobot = Cinch::Bot.new do
             else
                 if not @item == '%NONE'
                     @inventory.push @item
-                    val.push 'You unequip your #{@item[0]}!'
+                    val.push "You unequip your #{@item[0]}!"
                 end
                 @item = @inventory[slot-1]
                 @inventory.delete_at(slot-1)
-                val.push 'You equip your #{item[0]}!'
+                val.push "You equip your #{item[0]}!"
             end
             val
         end
@@ -234,8 +234,7 @@ mobot = Cinch::Bot.new do
                 else
                     val = 'You need 1000 credits to kick someone!'
                 end
-            end
-            if item.downcase == 'devoice'
+            elsif item.downcase == 'devoice'
                 if @credits > 1999
                     @credits = @credits - 2000
                     m.channel.devoice(recipient)
@@ -243,79 +242,71 @@ mobot = Cinch::Bot.new do
                 else
                     val = 'You need 2000 credits to devoice someone!'
                 end
-            end
-            if item.downcase == 'dex'
+            elsif item.downcase == 'dex'
                 amount = 450 + 50 * @dex
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @dex = @dex + 1
-                    val = 'DEX upgraded! Your DEX is now #{@dex}!'
+                    val = "DEX upgraded! Your DEX is now #{@dex}!"
                 else
-                    val = 'You need #{amount} credits to upgrade your DEX!'
+                    val = "You need #{amount} credits to upgrade your DEX!"
                 end
-            end
-            if item.downcase == 'int'
+            elsif item.downcase == 'int'
                 amount = 450 + 50 * @int
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @int = @int + 1
-                    val = 'INT upgraded! Your INT is now #{@int}!'
+                    val = "INT upgraded! Your INT is now #{@int}!"
                 else
-                    val = 'You need #{amount} credits to upgrade your INT!'
+                    val = "You need #{amount} credits to upgrade your INT!"
                 end
-            end
-            if item.downcase == 'str'
+            elsif item.downcase == 'str'
                 amount = 450 + 50 * @str
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @str = @str + 1
-                    val = 'STR upgraded! Your STR is now #{@str}!'
+                    val = "STR upgraded! Your STR is now #{@str}!"
                 else
-                    val = 'You need #{amount} credits to upgrade your STR!'
+                    val = "You need #{amount} credits to upgrade your STR!"
                 end
-            end
-            if item.downcase == 'lck'
+            elsif item.downcase == 'lck'
                 amount = 450 + 50 * @lck
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @lck = @lck + 1
-                    val = 'LCK upgraded! Your LCK is now #{@lck}!'
+                    val = "LCK upgraded! Your LCK is now #{@lck}!"
                 else
-                    val = 'You need #{amount} credits to upgrade your LCK!'
+                    val = "You need #{amount} credits to upgrade your LCK!"
                 end
-            end
-            if item.downcase == 'psi'
+            elsif item.downcase == 'psi'
                 amount = 450 + 50 * @psi
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @psi = @psi + 1
-                    val = 'PSI upgraded! Your PSI is now #{@psi}!'
+                    val = "PSI upgraded! Your PSI is now #{@psi}!"
                 else
-                    val = 'You need #{amount} credits to upgrade your PSI!'
+                    val = "You need #{amount} credits to upgrade your PSI!"
                 end
-            end
-            if item.downcase == 'acc'
+            elsif item.downcase == 'acc'
                 amount = 450 + 50 * @acc
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @acc = @acc + 1
-                    val = 'ACC upgraded! Your ACC is now #{@acc}!'
+                    val = "ACC upgraded! Your ACC is now #{@acc}!"
                 else
-                    val = 'You need #{amount} credits to upgrade your ACC!'
+                    val = "You need #{amount} credits to upgrade your ACC!"
                 end
-            end
-            if item.downcase == 'access'
+            elsif item.downcase == 'access'
                 amount = 2000 + (@access * 1500)
                 if @credits > amount - 1
                     @credits = @credits - amount
                     @access = @access + 1
-                    User('ChanServ').send('ACCESS #mobot ADD #{@name} #{@access}')
-                    val = 'Access increased! Your access is now #{@access}!'
+                    User('ChanServ').send("ACCESS #mobot ADD #{@name} #{@access}")
+                    val = "Access increased! Your access is now #{@access}!"
                 else
-                    val = 'You need #{amount} credits to increase your access!'
+                    val = "You need #{amount} credits to increase your access!"
                 end
             end
-            val
         end
     end
 
@@ -422,10 +413,10 @@ mobot = Cinch::Bot.new do
         lst = m.message.split(' ')
         if lst.length > 1
             stats = mobot.get_user(lst[1], $members).get_stats
-            m.reply m.user.to_s + ': ' + 'DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}'
+            m.reply m.user.to_s + ": DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}"
         else
             stats = mobot.get_user(m.user.to_s, $members).get_stats
-            m.reply m.user.to_s + ': ' + 'DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}'
+            m.reply m.user.to_s + ": DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}"
         end
     end
 
@@ -476,9 +467,9 @@ mobot = Cinch::Bot.new do
                 end
                 if reward < 0
                     reward = reward.abs
-                    m.reply m.user.to_s + ': ' + 'That mission lost your crew #{reward} credits each!'
+                    m.reply m.user.to_s + ": That mission lost your crew #{reward} credits each!"
                 else
-                    m.reply m.user.to_s + ': ' + 'That mission gained your crew #{reward} credits each!'
+                    m.reply m.user.to_s + ": That mission gained your crew #{reward} credits each!"
                     if rand() > 0.7
                         newitem = mobot.create_item()
                         if user.inventory == ['%NONE']
@@ -486,7 +477,7 @@ mobot = Cinch::Bot.new do
                         else
                             user.inventory.push newitem
                         end
-                        m.reply m.user.to_s + ': ' + 'You find a #{newitem[0]}!'
+                        m.reply m.user.to_s + ": You find a #{newitem[0]}!"
                     end
                 end
                 user.mission = true
@@ -501,15 +492,15 @@ mobot = Cinch::Bot.new do
                 if (user.credits + reward) < 1
                     neg = user.credits
                     user.credits = 0
-                    m.reply m.user.to_s + ': ' + 'That mission lost you #{neg} credits! You now have 0 credits!'
+                    m.reply m.user.to_s + ": That mission lost you #{neg} credits! You now have 0 credits!"
                 else
                     user.credits = user.credits + reward
                     current = user.credits
                     if reward < 0
                         reward = reward.abs
-                        m.reply m.user.to_s + ': ' + 'That mission lost you #{reward} credits! You now have #{current} credits!'
+                        m.reply m.user.to_s + ": That mission lost you #{reward} credits! You now have #{current} credits!"
                     else
-                        m.reply m.user.to_s + ': ' + 'That mission gained you #{reward} credits! You now have #{current} credits!'
+                        m.reply m.user.to_s + ": That mission gained you #{reward} credits! You now have #{current} credits!"
                         if rand() > 0.7
                             newitem = mobot.create_item()
                             if user.inventory == ['%NONE']
@@ -517,7 +508,7 @@ mobot = Cinch::Bot.new do
                             else
                                 user.inventory.push newitem
                             end
-                            m.reply m.user.to_s + ': ' + 'You find a #{newitem[0]}!'
+                            m.reply m.user.to_s + ": You find a #{newitem[0]}!"
                         end
                     end
                 end
@@ -611,13 +602,13 @@ mobot = Cinch::Bot.new do
         if (!config['admins'].include? recipient) && ($admins.include? m.user.to_s)
             if $admins.include? recipient
                 $admins.delete_at($admins.find_index(recipient))
-                m.reply m.user.to_s + ': ' + '#{recipient} was removed from admins.'
+                m.reply m.user.to_s + ": #{recipient} was removed from admins."
             else
                 $admins.push(recipient)
-                m.reply m.user.to_s + ': ' + '#{recipient} was added as an admin.'
+                m.reply m.user.to_s + ": #{recipient} was added as an admin."
             end
         else
-            m.reply m.user.to_s + ': ' + 'You don\'t have permission to do that!'
+            m.reply m.user.to_s + ': You don\'t have permission to do that!'
         end
     end
 
@@ -671,21 +662,21 @@ mobot = Cinch::Bot.new do
                                 joined = fact.name
                                 mobot.update_db($members)
                                 mobot.update_factions($factions)
-                                m.reply m.user.to_s + ': ' + 'You paid the entry fee of 500 coins and joined #{joined}!'
+                                m.reply m.user.to_s + ": You paid the entry fee of 500 coins and joined #{joined}!"
                             else
-                                m.reply m.user.to_s + ': ' + 'You don\'t have enough credits to pay the 500 credit entry fee!'
+                                m.reply m.user.to_s + ': You don\'t have enough credits to pay the 500 credit entry fee!'
                             end
                         else
-                            m.reply m.user.to_s + ': ' + 'You havn\'t been invited to that faction!'
+                            m.reply m.user.to_s + ': You havn\'t been invited to that faction!'
                         end
                     else
-                        m.reply m.user.to_s + ': ' + 'That faction doesn\'t exist!'
+                        m.reply m.user.to_s + ': That faction doesn\'t exist!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'That faction doesn\'t exist!'
+                    m.reply m.user.to_s + ': That faction doesn\'t exist!'
                 end
             else
-                m.reply m.user.to_s + ': ' + 'You\'re already in a faction!'
+                m.reply m.user.to_s + ': You\'re already in a faction!'
             end
         end
         if lst[0] == 'leave'
@@ -724,15 +715,15 @@ mobot = Cinch::Bot.new do
                         inv = lst[1]
                         fact.invited.push(inv)
                         mobot.update_factions($factions)
-                        m.reply m.user.to_s + ': ' + 'You just invited #{inv} to the faction!'
+                        m.reply m.user.to_s + ": You just invited #{inv} to the faction!"
                     else
-                        m.reply m.user.to_s + ': ' + 'You didn\'t specify a user!'
+                        m.reply m.user.to_s + ': You didn\'t specify a user!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'You don\'t have permission to do that!'
+                    m.reply m.user.to_s + ': You don\'t have permission to do that!'
                 end
             else
-                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                m.reply m.user.to_s + ': You aren\'t in a faction!'
             end
         end
         if lst[0] == 'bank'
@@ -747,24 +738,24 @@ mobot = Cinch::Bot.new do
                                     user.credits = user.credits - lst[1].to_i
                                     amount = fact.bank
                                     mobot.update_factions($factions)
-                                    m.reply m.user.to_s + ': ' + 'Deposit successful! The faction now has #{amount}!'
+                                    m.reply m.user.to_s + ": Deposit successful! The faction now has #{amount}!"
                                 else
-                                    m.reply m.user.to_s + ': ' + 'The bank can\'t hold that much!'
+                                    m.reply m.user.to_s + ': The bank can\'t hold that much!'
                                 end
                             else
-                                m.reply m.user.to_s + ': ' + 'You don\'t have that many credits!'
+                                m.reply m.user.to_s + ': You don\'t have that many credits!'
                             end
                         else
-                            m.reply m.user.to_s + ': ' + 'Please bank a valid amount!'
+                            m.reply m.user.to_s + ': Please bank a valid amount!'
                         end
                     else
-                        m.reply m.user.to_s + ': ' + 'Please bank a valid amount!'
+                        m.reply m.user.to_s + ': Please bank a valid amount!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'Your faction is a syndicate, and can\'t bank money!'
+                    m.reply m.user.to_s + ': Your faction is a syndicate, and can\'t bank money!'
                 end
             else
-                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                m.reply m.user.to_s + ': You aren\'t in a faction!'
             end
         end
         if lst[0] == 'show'
@@ -779,7 +770,7 @@ mobot = Cinch::Bot.new do
                 end
                 members = fact.tier1 + fact.tier2
                 lead = fact.leader
-                m.reply m.user.to_s + ': ' + 'You are in the faction #{nm}, which is lead by #{lead}, has a balance of #{bnk}, and has members #{members}.'
+                m.reply m.user.to_s + ": You are in the faction #{nm}, which is lead by #{lead}, has a balance of #{bnk}, and has members #{members}."
             else
                 m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
             end
@@ -819,7 +810,7 @@ mobot = Cinch::Bot.new do
                             user.crew = user2.name
                             cname = user2.name
                             mobot.update_db($members)
-                            m.reply m.user.to_s + ': ' + 'You just joined the crew of #{cname}!'
+                            m.reply m.user.to_s + ": You just joined the crew of #{cname}!"
                         end
                     else
                         m.reply m.user.to_s + ': ' + 'That users crew is closed!'
@@ -892,7 +883,7 @@ mobot = Cinch::Bot.new do
                 end
                 owner = user.crew
                 members = mobot.get_user(user.crew, $members).crew_array
-                m.reply m.user.to_s + ': ' + 'This #{status} crew is owned by #{owner} and has members #{members}.'
+                m.reply m.user.to_s + ": This #{status} crew is owned by #{owner} and has members #{members}."
             end
         end
     end
@@ -915,9 +906,9 @@ mobot = Cinch::Bot.new do
             robber.credits = robber.credits + amount - 20
             current = robber.credits
             if amount > 0
-                m.reply 'You successfully stole #{amount} credits! You now have #{current} credits!'
+                m.reply "You successfully stole #{amount} credits! You now have #{current} credits!"
             else
-                m.reply 'You failed to steal anything! You now have #{current} credits!'
+                m.reply "You failed to steal anything! You now have #{current} credits!"
             end
             mobot.update_db($members)
         else
@@ -970,11 +961,11 @@ mobot = Cinch::Bot.new do
                 if rand() > 0.52
                     user.credits = user.credits + lst[0].to_i
                     amount = user.credits
-                    m.reply m.user.to_s + ': ' + 'Congratulations, you won! You now have #{amount} credits!'
+                    m.reply m.user.to_s + ": Congratulations, you won! You now have #{amount} credits!"
                 else
                     user.credits = user.credits - lst[0].to_i
                     amount = user.credits
-                    m.reply m.user.to_s + ': ' + 'You lost! You now have #{amount} credits!'
+                    m.reply m.user.to_s + ": You lost! You now have #{amount} credits!'"
                 end
             end
             mobot.update_db($members)
@@ -996,10 +987,10 @@ mobot = Cinch::Bot.new do
         if userGiver.credits >= combined
             userGiver.credits -= combined
             userReciever.credits += amount
-            m.reply m.user.to_s + ': ' + "#{userGiver.name} transfered #{amount} #{amount != 1 ? 'credits' : 'credit'} to #{userReciever.name}. #{fee} #{fee != 1 ? 'credits were ' : 'credit was'} charged for the transaction."
+            m.reply m.user.to_s + ": #{userGiver.name} transfered #{amount} #{amount != 1 ? 'credits' : 'credit'} to #{userReciever.name}. #{fee} #{fee != 1 ? 'credits were ' : 'credit was'} charged for the transaction."
             mobot.update_db($members)
         else
-            m.reply m.user.to_s + ': ' + "You need #{combined} credits to transfer #{amount} to #{userReciever.name}."
+            m.reply m.user.to_s + ": You need #{combined} credits to transfer #{amount} to #{userReciever.name}."
         end
     end
 end
