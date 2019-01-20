@@ -6,6 +6,7 @@ require_relative 'missions'
 
 #Load config using YAML
 config = YAML.load_file('config.yaml')
+force_mobot_channel = false
 
 #Global database accessible by all threads, technically a problem, but honestly what are the chances?
 $members = []
@@ -399,78 +400,116 @@ mobot = Cinch::Bot.new do
     end
 
     on :message,  /^credits/ do |m|
-        if m.channel == '#mobot'
-            lst = m.message.split(' ')
-            if lst.length > 1
-                m.reply m.user.to_s + ': ' + mobot.get_user(lst[1], $members).credits.to_s
-            else
-                m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).credits.to_s
-            end
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = m.message.split(' ')
+        if lst.length > 1
+            m.reply m.user.to_s + ': ' + mobot.get_user(lst[1], $members).credits.to_s
+        else
+            m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).credits.to_s
         end
     end
 
     on :message,  /^attr/ do |m|
-        if m.channel == '#mobot'
-            lst = m.message.split(' ')
-            if lst.length > 1
-                stats = mobot.get_user(lst[1], $members).get_stats
-                m.reply m.user.to_s + ': ' + 'DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}'
-            else
-                stats = mobot.get_user(m.user.to_s, $members).get_stats
-                m.reply m.user.to_s + ': ' + 'DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}'
-            end
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = m.message.split(' ')
+        if lst.length > 1
+            stats = mobot.get_user(lst[1], $members).get_stats
+            m.reply m.user.to_s + ': ' + 'DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}'
+        else
+            stats = mobot.get_user(m.user.to_s, $members).get_stats
+            m.reply m.user.to_s + ': ' + 'DEX: #{stats[0].to_s} | STR: #{stats[1].to_s} | INT: #{stats[2].to_s} | LCK: #{stats[3].to_s} | PSI: #{stats[4].to_s} | ACC: #{stats[5].to_s}'
         end
     end
 
     on :message, 'pvp' do |m|
-        if m.channel == '#mobot'
-            m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).pvp
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
         end
+
+        m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).pvp
     end
 
     on :message, 'mission' do |m|
-        if m.channel == '#mobot'
-            mission = $missions.sample
-            user = mobot.get_user(m.user.to_s, $members)
-            if user.ap > 0
-                user.ap = user.ap - 1
-                if not user.crew == '%NONE'
-                    statblock = []
-                    mobot.get_user(user.crew, $members).crew_array.each do |i|
-                        statblock.push(mobot.get_user(i, $members).get_modded_stats)
-                    end
-                    stats = [1, 1, 1, 1]
-                    statblock.each do |i|
-                        4.times do |j|
-                            if i[j] > stats[j]
-                                stats[j] = i[j]
-                            end
+        if force_mobot_channel == true && m.channel != '#mobot'
+            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        mission = $missions.sample
+        user = mobot.get_user(m.user.to_s, $members)
+        if user.ap > 0
+            user.ap = user.ap - 1
+            if not user.crew == '%NONE'
+                statblock = []
+                mobot.get_user(user.crew, $members).crew_array.each do |i|
+                    statblock.push(mobot.get_user(i, $members).get_modded_stats)
+                end
+                stats = [1, 1, 1, 1]
+                statblock.each do |i|
+                    4.times do |j|
+                        if i[j] > stats[j]
+                            stats[j] = i[j]
                         end
                     end
-                    result = mission.attempt(stats)
-                    reward = (result[2] / statblock.length).round
-                    reward = reward + 10
-                    m.reply m.user.to_s + ': ' + result[0]
-                    m.reply m.user.to_s + ': ' + result[1]
-                    mobot.get_user(user.crew, $members).crew_array.each do |i|
-                        u = mobot.get_user(i, $members)
-                        if (u.credits + reward) < 1
-                            user.credits = 0
+                end
+                result = mission.attempt(stats)
+                reward = (result[2] / statblock.length).round
+                reward = reward + 10
+                m.reply m.user.to_s + ': ' + result[0]
+                m.reply m.user.to_s + ': ' + result[1]
+                mobot.get_user(user.crew, $members).crew_array.each do |i|
+                    u = mobot.get_user(i, $members)
+                    if (u.credits + reward) < 1
+                        user.credits = 0
+                    else
+                        u.credits = u.credits + reward
+                    end
+                end
+                if reward < 0
+                    reward = reward.abs
+                    m.reply m.user.to_s + ': ' + 'That mission lost your crew #{reward} credits each!'
+                else
+                    m.reply m.user.to_s + ': ' + 'That mission gained your crew #{reward} credits each!'
+                    if rand() > 0.7
+                        newitem = mobot.create_item()
+                        if user.inventory == ['%NONE']
+                            user.inventory = [newitem]
                         else
-                            u.credits = u.credits + reward
+                            user.inventory.push newitem
                         end
+                        m.reply m.user.to_s + ': ' + 'You find a #{newitem[0]}!'
                     end
+                end
+                user.mission = true
+                mobot.update_db($members)
+                sleep(180)
+                user.mission = false
+            else
+                result = mission.attempt(user.get_modded_stats)
+                reward = result[2]
+                m.reply m.user.to_s + ': ' + result[0]
+                m.reply m.user.to_s + ': ' + result[1]
+                if (user.credits + reward) < 1
+                    neg = user.credits
+                    user.credits = 0
+                    m.reply m.user.to_s + ': ' + 'That mission lost you #{neg} credits! You now have 0 credits!'
+                else
+                    user.credits = user.credits + reward
+                    current = user.credits
                     if reward < 0
                         reward = reward.abs
-                        m.reply m.user.to_s + ': ' + 'That mission lost your crew #{reward} credits each!'
+                        m.reply m.user.to_s + ': ' + 'That mission lost you #{reward} credits! You now have #{current} credits!'
                     else
-                        m.reply m.user.to_s + ': ' + 'That mission gained your crew #{reward} credits each!'
+                        m.reply m.user.to_s + ': ' + 'That mission gained you #{reward} credits! You now have #{current} credits!'
                         if rand() > 0.7
                             newitem = mobot.create_item()
                             if user.inventory == ['%NONE']
@@ -481,48 +520,14 @@ mobot = Cinch::Bot.new do
                             m.reply m.user.to_s + ': ' + 'You find a #{newitem[0]}!'
                         end
                     end
-                    user.mission = true
-                    mobot.update_db($members)
-                    sleep(180)
-                    user.mission = false
-                else
-                    result = mission.attempt(user.get_modded_stats)
-                    reward = result[2]
-                    m.reply m.user.to_s + ': ' + result[0]
-                    m.reply m.user.to_s + ': ' + result[1]
-                    if (user.credits + reward) < 1
-                        neg = user.credits
-                        user.credits = 0
-                        m.reply m.user.to_s + ': ' + 'That mission lost you #{neg} credits! You now have 0 credits!'
-                    else
-                        user.credits = user.credits + reward
-                        current = user.credits
-                        if reward < 0
-                            reward = reward.abs
-                            m.reply m.user.to_s + ': ' + 'That mission lost you #{reward} credits! You now have #{current} credits!'
-                        else
-                            m.reply m.user.to_s + ': ' + 'That mission gained you #{reward} credits! You now have #{current} credits!'
-                            if rand() > 0.7
-                                newitem = mobot.create_item()
-                                if user.inventory == ['%NONE']
-                                    user.inventory = [newitem]
-                                else
-                                    user.inventory.push newitem
-                                end
-                                m.reply m.user.to_s + ': ' + 'You find a #{newitem[0]}!'
-                            end
-                        end
-                    end
-                    user.mission = true
-                    mobot.update_db($members)
-                    sleep(180)
-                    user.mission = false
                 end
-            else
-                m.reply m.user.to_s + ': ' + 'You don\'t have enough AP to do that!'
+                user.mission = true
+                mobot.update_db($members)
+                sleep(180)
+                user.mission = false
             end
         else
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply m.user.to_s + ': ' + 'You don\'t have enough AP to do that!'
         end
     end
 
@@ -532,34 +537,37 @@ mobot = Cinch::Bot.new do
     end
 
     on :message, 'inventory' do |m|
-        if m.channel == '#mobot'
-            m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).show_inventory.to_s
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
         end
+
+        m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).show_inventory.to_s
     end
 
     on :message, 'item' do |m|
-        if m.channel == '#mobot'
-            m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).item[0].to_s
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
         end
+
+        m.reply m.user.to_s + ': ' + mobot.get_user(m.user.to_s, $members).item[0].to_s
     end
 
     on :message, /^equip/ do |m|
-        if m.channel == '#mobot'
-        	lst = m.message.split(' ')
-        	if lst.length > 1
-                responses = mobot.get_user(m.user.to_s, $members).equip(lst[1])
-                responses.each do |i|
-                    m.reply m.user.to_s + ': ' + i.to_s
-                end
-            else
-                m.reply m.user.to_s + ': ' + 'You must specify an inventory slot!'
+        if force_mobot_channel == true && m.channel != '#mobot'
+            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = m.message.split(' ')
+        if lst.length > 1
+            responses = mobot.get_user(m.user.to_s, $members).equip(lst[1])
+            responses.each do |i|
+                m.reply m.user.to_s + ': ' + i.to_s
             end
         else
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            m.reply m.user.to_s + ': ' + 'You must specify an inventory slot!'
         end
     end
 
@@ -615,317 +623,319 @@ mobot = Cinch::Bot.new do
 
     #FIXME
     on :message, /^faction (.+)/ do |m, arg|
-        if m.channel == '#mobot'
-            lst = arg.split(' ')
-            user = mobot.get_user(m.user.to_s, $members)
-            m.reply m.user.to_s + ': ' + lst
-            if lst[0] == 'create'
-                if user.fact == '%NONE'
-                    if lst.length > 1
-                        current = mobot.get_fact(lst[1..lst.length])
-                        if current == '%NONE'
-                            if user.credits > 14999
-                                user.credits = user.credits - 15000
-                                $factions.push(Faction.new(lst[1..lst.length].join(' '), m.user.to_s))
-                                user.fact = lst[1..lst.length].join(' ')
-                                mobot.get_fact(user.fact).tier1.push(user.name)
-                                mobot.update_db($members)
-                                mobot.update_factions($factions)
-                                m.reply m.user.to_s + ': ' + 'You pay the 15000 startup cost and create a new faction!'
-                            else
-                                m.reply m.user.to_s + ': ' + 'You need 15000 credits to start a faction!'
-                            end
+        if force_mobot_channel == true && m.channel != '#mobot'
+            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = arg.split(' ')
+        user = mobot.get_user(m.user.to_s, $members)
+        m.reply m.user.to_s + ': ' + lst
+        if lst[0] == 'create'
+            if user.fact == '%NONE'
+                if lst.length > 1
+                    current = mobot.get_fact(lst[1..lst.length])
+                    if current == '%NONE'
+                        if user.credits > 14999
+                            user.credits = user.credits - 15000
+                            $factions.push(Faction.new(lst[1..lst.length].join(' '), m.user.to_s))
+                            user.fact = lst[1..lst.length].join(' ')
+                            mobot.get_fact(user.fact).tier1.push(user.name)
+                            mobot.update_db($members)
+                            mobot.update_factions($factions)
+                            m.reply m.user.to_s + ': ' + 'You pay the 15000 startup cost and create a new faction!'
                         else
-                            m.reply m.user.to_s + ': ' + 'That faction already exists!'
+                            m.reply m.user.to_s + ': ' + 'You need 15000 credits to start a faction!'
                         end
                     else
-                        m.reply m.user.to_s + ': ' + 'You need to give your faction a name!'
+                        m.reply m.user.to_s + ': ' + 'That faction already exists!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'You\'re already in a faction!'
+                    m.reply m.user.to_s + ': ' + 'You need to give your faction a name!'
                 end
+            else
+                m.reply m.user.to_s + ': ' + 'You\'re already in a faction!'
             end
-            if lst[0] == 'join'
-                if user.fact == '%NONE'
-                    if lst.length > 1
-                        fact = mobot.get_fact(lst[1..lst.length].join(' '))
-                        if not fact == '%NONE'
-                            if fact.invited.include? m.user.to_s
-                                if user.credits > 499
-                                    user.credits = user.credits - 500
-                                    user.fact = lst[1..lst.length].join(' ')
-                                    fact.tier2.push(m.user.to_s)
-                                    fact.invited = fact.invited - [user.name]
-                                    joined = fact.name
-                                    mobot.update_db($members)
-                                    mobot.update_factions($factions)
-                                    m.reply m.user.to_s + ': ' + 'You paid the entry fee of 500 coins and joined #{joined}!'
-                                else
-                                    m.reply m.user.to_s + ': ' + 'You don\'t have enough credits to pay the 500 credit entry fee!'
-                                end
+        end
+        if lst[0] == 'join'
+            if user.fact == '%NONE'
+                if lst.length > 1
+                    fact = mobot.get_fact(lst[1..lst.length].join(' '))
+                    if not fact == '%NONE'
+                        if fact.invited.include? m.user.to_s
+                            if user.credits > 499
+                                user.credits = user.credits - 500
+                                user.fact = lst[1..lst.length].join(' ')
+                                fact.tier2.push(m.user.to_s)
+                                fact.invited = fact.invited - [user.name]
+                                joined = fact.name
+                                mobot.update_db($members)
+                                mobot.update_factions($factions)
+                                m.reply m.user.to_s + ': ' + 'You paid the entry fee of 500 coins and joined #{joined}!'
                             else
-                                m.reply m.user.to_s + ': ' + 'You havn\'t been invited to that faction!'
+                                m.reply m.user.to_s + ': ' + 'You don\'t have enough credits to pay the 500 credit entry fee!'
                             end
                         else
-                            m.reply m.user.to_s + ': ' + 'That faction doesn\'t exist!'
+                            m.reply m.user.to_s + ': ' + 'You havn\'t been invited to that faction!'
                         end
                     else
                         m.reply m.user.to_s + ': ' + 'That faction doesn\'t exist!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'You\'re already in a faction!'
+                    m.reply m.user.to_s + ': ' + 'That faction doesn\'t exist!'
                 end
+            else
+                m.reply m.user.to_s + ': ' + 'You\'re already in a faction!'
             end
-            if lst[0] == 'leave'
-                if not user.fact == '%NONE'
-                    fact = mobot.get_fact(user.fact)
-                    if fact.leader == user.name
-                        members = fact.tier1 + fact.tier2
-                        members.each do |i|
-                            mobot.get_user(i, $members).fact = '%NONE'
-                        end
-                        $factions.delete(fact)
-                        mobot.update_db($members)
-                        mobot.update_factions($factions)
-                        m.reply m.user.to_s + ': ' + 'You disband the faction!'
-                    else
-                        if fact.tier1.include? user.name
-                            fact.tier1 = fact.tier1 - user.name
-                        end
-                        if fact.tier2.include? user.name
-                            fact.tier2 = fact.tier1 - user.name
-                        end
-                        user.fact = '%NONE'
-                        mobot.update_db($members)
-                        mobot.update_factions($factions)
-                        m.reply m.user.to_s + ': ' + 'You leave the faction!'
+        end
+        if lst[0] == 'leave'
+            if not user.fact == '%NONE'
+                fact = mobot.get_fact(user.fact)
+                if fact.leader == user.name
+                    members = fact.tier1 + fact.tier2
+                    members.each do |i|
+                        mobot.get_user(i, $members).fact = '%NONE'
                     end
+                    $factions.delete(fact)
+                    mobot.update_db($members)
+                    mobot.update_factions($factions)
+                    m.reply m.user.to_s + ': ' + 'You disband the faction!'
                 else
-                    m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
-                end
-            end
-            if lst[0] == 'invite'
-                if not user.fact == '%NONE'
-                    fact = mobot.get_fact(user.fact)
                     if fact.tier1.include? user.name
-                        if lst.length > 1
-                            inv = lst[1]
-                            fact.invited.push(inv)
-                            mobot.update_factions($factions)
-                            m.reply m.user.to_s + ': ' + 'You just invited #{inv} to the faction!'
-                        else
-                            m.reply m.user.to_s + ': ' + 'You didn\'t specify a user!'
-                        end
+                        fact.tier1 = fact.tier1 - user.name
+                    end
+                    if fact.tier2.include? user.name
+                        fact.tier2 = fact.tier1 - user.name
+                    end
+                    user.fact = '%NONE'
+                    mobot.update_db($members)
+                    mobot.update_factions($factions)
+                    m.reply m.user.to_s + ': ' + 'You leave the faction!'
+                end
+            else
+                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+            end
+        end
+        if lst[0] == 'invite'
+            if not user.fact == '%NONE'
+                fact = mobot.get_fact(user.fact)
+                if fact.tier1.include? user.name
+                    if lst.length > 1
+                        inv = lst[1]
+                        fact.invited.push(inv)
+                        mobot.update_factions($factions)
+                        m.reply m.user.to_s + ': ' + 'You just invited #{inv} to the faction!'
                     else
-                        m.reply m.user.to_s + ': ' + 'You don\'t have permission to do that!'
+                        m.reply m.user.to_s + ': ' + 'You didn\'t specify a user!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                    m.reply m.user.to_s + ': ' + 'You don\'t have permission to do that!'
                 end
+            else
+                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
             end
-            if lst[0] == 'bank'
-                if not user.fact == '%NONE'
-                    fact = mobot.get_fact(user.fact)
-                    if not fact.syndicate
-                        if lst.length > 1
-                            if 0 + lst[1].to_i > 1
-                                if lst[1].to_i < user.credits
-                                    if not fact.bank + lst[1].to_i > 3000
-                                        fact.bank = fact.bank + lst[1].to_i
-                                        user.credits = user.credits - lst[1].to_i
-                                        amount = fact.bank
-                                        mobot.update_factions($factions)
-                                        m.reply m.user.to_s + ': ' + 'Deposit successful! The faction now has #{amount}!'
-                                    else
-                                        m.reply m.user.to_s + ': ' + 'The bank can\'t hold that much!'
-                                    end
+        end
+        if lst[0] == 'bank'
+            if not user.fact == '%NONE'
+                fact = mobot.get_fact(user.fact)
+                if not fact.syndicate
+                    if lst.length > 1
+                        if 0 + lst[1].to_i > 1
+                            if lst[1].to_i < user.credits
+                                if not fact.bank + lst[1].to_i > 3000
+                                    fact.bank = fact.bank + lst[1].to_i
+                                    user.credits = user.credits - lst[1].to_i
+                                    amount = fact.bank
+                                    mobot.update_factions($factions)
+                                    m.reply m.user.to_s + ': ' + 'Deposit successful! The faction now has #{amount}!'
                                 else
-                                    m.reply m.user.to_s + ': ' + 'You don\'t have that many credits!'
+                                    m.reply m.user.to_s + ': ' + 'The bank can\'t hold that much!'
                                 end
                             else
-                                m.reply m.user.to_s + ': ' + 'Please bank a valid amount!'
+                                m.reply m.user.to_s + ': ' + 'You don\'t have that many credits!'
                             end
                         else
                             m.reply m.user.to_s + ': ' + 'Please bank a valid amount!'
                         end
                     else
-                        m.reply m.user.to_s + ': ' + 'Your faction is a syndicate, and can\'t bank money!'
+                        m.reply m.user.to_s + ': ' + 'Please bank a valid amount!'
                     end
                 else
-                    m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                    m.reply m.user.to_s + ': ' + 'Your faction is a syndicate, and can\'t bank money!'
                 end
+            else
+                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
             end
-            if lst[0] == 'show'
-                if not user.fact == '%NONE'
-                    fact = mobot.get_fact(user.fact)
-                    nm = fact.name
-                    bnk = fact.bank
-                    if fact.syndicate
-                        syn = 'Syndicate'
-                    else
-                        syn = 'Corporation'
-                    end
-                    members = fact.tier1 + fact.tier2
-                    lead = fact.leader
-                    m.reply m.user.to_s + ': ' + 'You are in the faction #{nm}, which is lead by #{lead}, has a balance of #{bnk}, and has members #{members}.'
+        end
+        if lst[0] == 'show'
+            if not user.fact == '%NONE'
+                fact = mobot.get_fact(user.fact)
+                nm = fact.name
+                bnk = fact.bank
+                if fact.syndicate
+                    syn = 'Syndicate'
                 else
-                    m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
+                    syn = 'Corporation'
                 end
+                members = fact.tier1 + fact.tier2
+                lead = fact.leader
+                m.reply m.user.to_s + ': ' + 'You are in the faction #{nm}, which is lead by #{lead}, has a balance of #{bnk}, and has members #{members}.'
+            else
+                m.reply m.user.to_s + ': ' + 'You aren\'t in a faction!'
             end
-        else
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
         end
     end
 
     on :message, /^crew (.+)/ do |m, arg|
-        if m.channel == '#mobot'
-            lst = arg.split(' ')
-            user = mobot.get_user(m.user.to_s, $members)
-            if lst[0] == 'start'
-                if user.crew == '%NONE'
-                    user.crew = user.name
-                    user.crew_array = [user.name]
-                    user.crew_open = false
-                    mobot.update_db($members)
-                    m.reply m.user.to_s + ': ' + 'You started a crew!'
-                else
-                    m.reply m.user.to_s + ': ' + 'You\'re already in a crew!'
-                end
+        if force_mobot_channel == true && m.channel != '#mobot'
+            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = arg.split(' ')
+        user = mobot.get_user(m.user.to_s, $members)
+        if lst[0] == 'start'
+            if user.crew == '%NONE'
+                user.crew = user.name
+                user.crew_array = [user.name]
+                user.crew_open = false
+                mobot.update_db($members)
+                m.reply m.user.to_s + ': ' + 'You started a crew!'
+            else
+                m.reply m.user.to_s + ': ' + 'You\'re already in a crew!'
             end
-            if lst[0] == 'join'
-                if user.crew == '%NONE'
-                    user2 = mobot.get_user(lst[1], $members)
-                    if not user2.crew == user2.name
-                        m.reply m.user.to_s + ': ' + 'That user isn\'t a crew captain!'
-                    else
-                        if user2.crew_open == true
-                            if user2.crew_array.length > 2
-                                m.reply m.user.to_s + ': ' + 'That users crew is full!'
-                            else
-                                user2.crew_array.push(user.name)
-                                user.crew = user2.name
-                                cname = user2.name
-                                mobot.update_db($members)
-                                m.reply m.user.to_s + ': ' + 'You just joined the crew of #{cname}!'
-                            end
+        end
+        if lst[0] == 'join'
+            if user.crew == '%NONE'
+                user2 = mobot.get_user(lst[1], $members)
+                if not user2.crew == user2.name
+                    m.reply m.user.to_s + ': ' + 'That user isn\'t a crew captain!'
+                else
+                    if user2.crew_open == true
+                        if user2.crew_array.length > 2
+                            m.reply m.user.to_s + ': ' + 'That users crew is full!'
                         else
-                            m.reply m.user.to_s + ': ' + 'That users crew is closed!'
+                            user2.crew_array.push(user.name)
+                            user.crew = user2.name
+                            cname = user2.name
+                            mobot.update_db($members)
+                            m.reply m.user.to_s + ': ' + 'You just joined the crew of #{cname}!'
                         end
-                    end
-                else
-                    m.reply m.user.to_s + ': ' + 'You\'re already in a crew!'
-                end
-            end
-            if lst[0] == 'open'
-                if user.crew == user.name
-                    if not user.crew_open
-                        user.crew_open = true
-                        m.reply m.user.to_s + ': ' + 'Your crew is now open!'
-                        mobot.update_db($members)
                     else
-                        m.reply m.user.to_s + ': ' + 'Your crew is already open!'
-                    end
-                else
-                    if user.crew == '%NONE'
-                        m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
-                    else
-                        m.reply m.user.to_s + ': ' + 'You aren\'t the captain of this crew!'
+                        m.reply m.user.to_s + ': ' + 'That users crew is closed!'
                     end
                 end
+            else
+                m.reply m.user.to_s + ': ' + 'You\'re already in a crew!'
             end
-            if lst[0] == 'close'
-                if user.crew == user.name
-                    if user.crew_open
-                        user.crew_open = false
-                        mobot.update_db($members)
-                        m.reply m.user.to_s + ': ' + 'Your crew is now closed!'
-                    else
-                        m.reply m.user.to_s + ': ' + 'Your crew is already closed!'
-                    end
-                else
-                    if user.crew == '%NONE'
-                        m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
-                    else
-                        m.reply m.user.to_s + ': ' + 'You aren\'t the captain of this crew!'
-                    end
-                end
-            end
-            if lst[0] == 'leave'
-                if user.crew == user.name
-                    user.crew_array.each do |i|
-                        j = mobot.get_user(i, $members)
-                        j.crew = '%NONE'
-                    end
-                    user.crew_array = []
+        end
+        if lst[0] == 'open'
+            if user.crew == user.name
+                if not user.crew_open
+                    user.crew_open = true
+                    m.reply m.user.to_s + ': ' + 'Your crew is now open!'
                     mobot.update_db($members)
-                    m.reply m.user.to_s + ': ' + 'You disband the crew!'
                 else
-                    user2 = mobot.get_user(user.crew, $members)
-                    user2.crew_array = user2.crew_array - [user.name]
-                    user.crew = '%NONE'
-                    mobot.update_db($members)
-                    m.reply m.user.to_s + ': ' + 'You leave the crew!'
+                    m.reply m.user.to_s + ': ' + 'Your crew is already open!'
                 end
-            end
-            if lst[0] == 'show'
+            else
                 if user.crew == '%NONE'
                     m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
                 else
-                    open = mobot.get_user(user.crew, $members).crew_open
-                    if open
-                        status = 'OPEN'
-                    else
-                        status = 'CLOSED'
-                    end
-                    owner = user.crew
-                    members = mobot.get_user(user.crew, $members).crew_array
-                    m.reply m.user.to_s + ': ' + 'This #{status} crew is owned by #{owner} and has members #{members}.'
+                    m.reply m.user.to_s + ': ' + 'You aren\'t the captain of this crew!'
                 end
             end
-        else
-            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+        end
+        if lst[0] == 'close'
+            if user.crew == user.name
+                if user.crew_open
+                    user.crew_open = false
+                    mobot.update_db($members)
+                    m.reply m.user.to_s + ': ' + 'Your crew is now closed!'
+                else
+                    m.reply m.user.to_s + ': ' + 'Your crew is already closed!'
+                end
+            else
+                if user.crew == '%NONE'
+                    m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
+                else
+                    m.reply m.user.to_s + ': ' + 'You aren\'t the captain of this crew!'
+                end
+            end
+        end
+        if lst[0] == 'leave'
+            if user.crew == user.name
+                user.crew_array.each do |i|
+                    j = mobot.get_user(i, $members)
+                    j.crew = '%NONE'
+                end
+                user.crew_array = []
+                mobot.update_db($members)
+                m.reply m.user.to_s + ': ' + 'You disband the crew!'
+            else
+                user2 = mobot.get_user(user.crew, $members)
+                user2.crew_array = user2.crew_array - [user.name]
+                user.crew = '%NONE'
+                mobot.update_db($members)
+                m.reply m.user.to_s + ': ' + 'You leave the crew!'
+            end
+        end
+        if lst[0] == 'show'
+            if user.crew == '%NONE'
+                m.reply m.user.to_s + ': ' + 'You aren\'t in a crew!'
+            else
+                open = mobot.get_user(user.crew, $members).crew_open
+                if open
+                    status = 'OPEN'
+                else
+                    status = 'CLOSED'
+                end
+                owner = user.crew
+                members = mobot.get_user(user.crew, $members).crew_array
+                m.reply m.user.to_s + ': ' + 'This #{status} crew is owned by #{owner} and has members #{members}.'
+            end
         end
     end
 
-
-
     on :message, /^rob (.+)/ do |m, arg|
-        if m.channel == '#mobot'
-            lst = arg.split(' ')
-            robber = mobot.get_user(m.user.to_s, $members)
-            victim = mobot.get_user(lst[0], $members)
-            if robber.ap > 0
-                robber.ap = robber.ap - 1
-                if robber == victim
-                    m.reply 'You\'re seriously trying to rob yourself? What a masochist!'
-                end
-                amount = victim.robbed
-                robber.credits = robber.credits + amount - 20
-                current = robber.credits
-                if amount > 0
-                    m.reply 'You successfully stole #{amount} credits! You now have #{current} credits!'
-                else
-                    m.reply 'You failed to steal anything! You now have #{current} credits!'
-                end
-                mobot.update_db($members)
-            else
-                m.reply 'You don\'t have enough AP to do that!'
+        if force_mobot_channel == true && m.channel != '#mobot'
+            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = arg.split(' ')
+        robber = mobot.get_user(m.user.to_s, $members)
+        victim = mobot.get_user(lst[0], $members)
+        if robber.ap > 0
+            robber.ap = robber.ap - 1
+            if robber == victim
+                m.reply 'You\'re seriously trying to rob yourself? What a masochist!'
             end
+            amount = victim.robbed
+            robber.credits = robber.credits + amount - 20
+            current = robber.credits
+            if amount > 0
+                m.reply 'You successfully stole #{amount} credits! You now have #{current} credits!'
+            else
+                m.reply 'You failed to steal anything! You now have #{current} credits!'
+            end
+            mobot.update_db($members)
         else
-            m.reply('Commands only work in #mobot!')
+            m.reply 'You don\'t have enough AP to do that!'
         end
     end
 
     on :message, /^purchase (.+)/ do |m, arg|
-        if m.channel == '#mobot'
-            lst = arg.split(' ')
-            item = lst[0]
-            recipient = lst[1]
-            m.reply mobot.get_user(m.user.to_s, $members).buy(item, recipient, m)
-            mobot.update_db($members)
-        else
-            m.reply('Commands only work in #mobot!')
+        if force_mobot_channel == true && m.channel != '#mobot'
+            m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
         end
+
+        lst = arg.split(' ')
+        item = lst[0]
+        recipient = lst[1]
+        m.reply mobot.get_user(m.user.to_s, $members).buy(item, recipient, m)
+        mobot.update_db($members)
     end
 
     on :message, '.bots' do |m|
@@ -948,46 +958,48 @@ mobot = Cinch::Bot.new do
     end
 
     on :message, /^bet (.+)/ do |m, arg|
-        if m.channel == '#mobot'
-            lst = arg.split(' ')
-            user = mobot.get_user(m.user.to_s, $members)
-            if lst[0].to_i > 1
-                if user.credits - lst[0].to_i > -1
-                    if rand() > 0.52
-                        user.credits = user.credits + lst[0].to_i
-                        amount = user.credits
-                        m.reply m.user.to_s + ': ' + 'Congratulations, you won! You now have #{amount} credits!'
-                    else
-                        user.credits = user.credits - lst[0].to_i
-                        amount = user.credits
-                        m.reply m.user.to_s + ': ' + 'You lost! You now have #{amount} credits!'
-                    end
-                end
-                mobot.update_db($members)
-            end
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        lst = arg.split(' ')
+        user = mobot.get_user(m.user.to_s, $members)
+        if lst[0].to_i > 1
+            if user.credits - lst[0].to_i > -1
+                if rand() > 0.52
+                    user.credits = user.credits + lst[0].to_i
+                    amount = user.credits
+                    m.reply m.user.to_s + ': ' + 'Congratulations, you won! You now have #{amount} credits!'
+                else
+                    user.credits = user.credits - lst[0].to_i
+                    amount = user.credits
+                    m.reply m.user.to_s + ': ' + 'You lost! You now have #{amount} credits!'
+                end
+            end
+            mobot.update_db($members)
         end
     end
 
     on :message, /^give (\S+) (\d+)/ do |m, target, amount|
-        if m.channel == '#mobot'
-            userGiver = mobot.get_user(m.user.to_s, $members)
-            userReciever = mobot.get_user(target,$members)
-            amount = Integer(amount)
-            fee = (amount*0.01).ceil
-            combined = amount + fee
-
-            if userGiver.credits >= combined
-                userGiver.credits -= combined
-                userReciever.credits += amount
-                m.reply m.user.to_s + ': ' + "#{userGiver.name} transfered #{amount} #{amount != 1 ? 'credits' : 'credit'} to #{userReciever.name}. #{fee} #{fee != 1 ? 'credits were ' : 'credit was'} charged for the transaction."
-                mobot.update_db($members)
-            else
-                m.reply m.user.to_s + ': ' + "You need #{combined} credits to transfer #{amount} to #{userReciever.name}."
-            end
-        else
+        if force_mobot_channel == true && m.channel != '#mobot'
             m.reply(m.user.to_s + ': ' + 'Commands only work in #mobot!')
+            next
+        end
+
+        userGiver = mobot.get_user(m.user.to_s, $members)
+        userReciever = mobot.get_user(target,$members)
+        amount = Integer(amount)
+        fee = (amount*0.01).ceil
+        combined = amount + fee
+
+        if userGiver.credits >= combined
+            userGiver.credits -= combined
+            userReciever.credits += amount
+            m.reply m.user.to_s + ': ' + "#{userGiver.name} transfered #{amount} #{amount != 1 ? 'credits' : 'credit'} to #{userReciever.name}. #{fee} #{fee != 1 ? 'credits were ' : 'credit was'} charged for the transaction."
+            mobot.update_db($members)
+        else
+            m.reply m.user.to_s + ': ' + "You need #{combined} credits to transfer #{amount} to #{userReciever.name}."
         end
     end
 end
